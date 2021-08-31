@@ -1,7 +1,10 @@
 import React from 'react';
-import { Image, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 
-import logo from '../assets/Logo.svg';
+import logo from '../assets/logo.png';
+
+import { Button } from '../components/Button';
+import colors from '../styles/colors';
 
 export function Welcome() {
   return (
@@ -9,11 +12,13 @@ export function Welcome() {
         <View style={styles.wrapper}>
             <Text style={styles.title}>Bem-vindo!</Text>
             
-            <Image source={logo} style={styles.image}/>
+            <Image 
+              source={logo} 
+              style={styles.image}
+              resizeMode='contain'
+            />
 
-            <TouchableOpacity style={styles.button}>
-                <Text>Começar</Text>
-            </TouchableOpacity>
+            <Button title='Começar'></Button>
         </View>
     </SafeAreaView>
   );
@@ -33,16 +38,11 @@ const styles = StyleSheet.create({
     fontSize: 28,
     textAlign: 'center',
     marginTop: 38,
-    lineHeight: 34
+    lineHeight: 34,
+    color: colors.heading,
+    fontWeight: 'bold',
   },
   image: {
-
-  },
-  button: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 16,
-    marginBottom: 10,
-    height: 56
+    height: Dimensions.get('window').width * 0.7
   }
 });
