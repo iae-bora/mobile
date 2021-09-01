@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dimensions, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 import logo from '../assets/logo.png';
 
@@ -7,6 +8,12 @@ import { Button } from '../components/Button';
 import colors from '../styles/colors';
 
 export function Welcome() {
+  const navigation = useNavigation();
+
+  function handleSubmit(){
+    navigation.navigate('Login');
+  }
+
   return (
     <SafeAreaView style={styles.container}>
         <View style={styles.wrapper}>
@@ -18,7 +25,10 @@ export function Welcome() {
               resizeMode='contain'
             />
 
-            <Button title='Começar'></Button>
+            <Button 
+              title='Começar'
+              onPress={handleSubmit}
+            ></Button>
         </View>
     </SafeAreaView>
   );

@@ -8,9 +8,7 @@ export function Login(){
     const navigation = useNavigation();
 
     async function handleSubmit(){
-        navigation.navigate({
-            key: 'UserAddress'
-        });
+        navigation.navigate('UserAddress');
     }
 
     return (
@@ -20,7 +18,9 @@ export function Login(){
             <TouchableOpacity
                 onPress={handleSubmit}
             >
-                Login com o Google
+                <Text>
+                    Login com o Google
+                </Text>
             </TouchableOpacity>
         </View>
     )
