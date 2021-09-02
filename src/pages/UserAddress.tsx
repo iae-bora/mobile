@@ -20,7 +20,7 @@ export function UserAddress(){
     const navigation = useNavigation();
 
     async function handleSubmit(){
-        // navigation.navigate();
+        navigation.navigate('Questionnaire');
     }
 
     return (
@@ -35,6 +35,11 @@ export function UserAddress(){
                             <View style={styles.header}>
                                 <Text style={styles.title}>
                                     Qual seu endereço?
+                                </Text>
+
+                                <Text style={styles.subtitle}>
+                                    Precisamos dessa informação para {'\n'}
+                                    criarmos melhores rotas para você
                                 </Text>
                             </View>
 
@@ -82,20 +87,27 @@ const styles = StyleSheet.create({
         color: colors.heading,
         width: '100%',
         fontSize: 18,
-        marginTop: 50,
-        padding: 10,
-        textAlign: 'center'
+        marginTop: 70,
+        padding: 10
     },
     title: {
         fontSize: 24,
         lineHeight: 32,
         textAlign: 'center',
         color: colors.heading,
-        marginTop: 20
+        marginTop: 0,
+        fontWeight: 'bold'
+    },
+    subtitle: {
+        textAlign: 'center',
+        fontSize: 17,
+        paddingVertical: 20,
+        color: colors.heading
     },
     footer: {
-        marginTop: 40,
+        marginTop: 50,
         width: '100%',
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
+        alignItems: 'center'
     }
 })
