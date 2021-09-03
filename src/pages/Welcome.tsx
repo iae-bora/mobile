@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, Image, SafeAreaView, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Image, StatusBar, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import logo from '../assets/logo.png';
@@ -36,18 +36,19 @@ export function Welcome() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1
+    flex: 1,
+    height: StatusBar.currentHeight,
   },
   wrapper: {
       flex: 1,
       alignItems: 'center',
       justifyContent: 'space-around',
-      paddingHorizontal: 20
+      paddingHorizontal: 20,
+      paddingVertical: 80
   },
   title: {
     fontSize: 28,
     textAlign: 'center',
-    marginTop: 38,
     lineHeight: 34,
     color: colors.heading,
     fontWeight: 'bold',
