@@ -12,7 +12,7 @@ export function AskRecommendation(){
     const [localsQuantity, setLocalsQuantity] = useState('1');
 
     async function handleSubmit(){
-        // navigation.navigate('Home');
+        navigation.navigate('Recommendation');
     }
 
     return (
