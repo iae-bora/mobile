@@ -15,11 +15,13 @@ export function Home(){
             <Header />
 
             <View style={styles.wrapper}>
-                <Button button_style={styles.button} title='Quero uma recomendação' />
+                <Button 
+                    button_style={styles.button} 
+                    title='Quero uma recomendação'
+                    onPress={() => navigation.navigate('AskRecommendation')}
+                />
 
                 <Button button_style={styles.button} title='Histórico de rotas' />
-
-                <Button button_style={styles.button} title='Avaliações de usuários' />
 
                 <Button 
                     button_style={styles.button}

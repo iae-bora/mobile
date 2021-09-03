@@ -6,6 +6,7 @@ import { Login } from '../pages/Login';
 import { UserAddress } from '../pages/UserAddress';
 import { Questionnaire } from '../pages/Questionnaire';
 import { Home } from '../pages/Home';
+import { AskRecommendation } from '../pages/AskRecommendation';
 
 import colors from '../styles/colors';
 
@@ -44,6 +45,11 @@ const AppRoutes: React.FC = () => (
         <stackRoutes.Screen
             name='Home'
             component={Home}
+        />
+
+        <stackRoutes.Screen
+            name='AskRecommendation'
+            component={AskRecommendation}
         />
     </stackRoutes.Navigator>
 )
