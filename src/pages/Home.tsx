@@ -21,7 +21,11 @@ export function Home(){
                     onPress={() => navigation.navigate('AskRecommendation')}
                 />
 
-                <Button button_style={styles.button} title='Histórico de rotas' />
+                <Button 
+                    button_style={styles.button} 
+                    title='Histórico de rotas'
+                    onPress={() => navigation.navigate('TourHistory')}
+                />
 
                 <Button 
                     button_style={styles.button}
