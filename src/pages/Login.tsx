@@ -20,7 +20,7 @@ export function Login(){
                 style={styles.button}
                 onPress={handleSubmit}
             >
-                <View>
+                <View style={styles.imageContainer}>
                     <Image style={styles.googleImage} source={googleIconImg} />
                 </View>
                 <Text style={styles.buttonText}>
@@ -37,7 +37,8 @@ const styles = StyleSheet.create({
         height: StatusBar.currentHeight,
         alignItems: 'center',
         justifyContent: 'space-around',
-        paddingHorizontal: 20
+        paddingHorizontal: 20,
+        paddingVertical: 150
     },
     title: {
         fontSize: 28,
@@ -60,6 +61,10 @@ const styles = StyleSheet.create({
     buttonText: {
         flexDirection: 'row',
         justifyContent: 'space-between'
+    },
+    imageContainer: {
+        height: 24, 
+        width: 24
     },
     googleImage: {
         flex: 1,
