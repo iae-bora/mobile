@@ -1,4 +1,4 @@
-# IAe, bora? Mobile (WIP 🚧)
+# IAe, Bora? Mobile (WIP 🚧)
 This app is developed with React Native and Expo.
 
 ## Installing dependencies
