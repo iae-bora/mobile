@@ -1,17 +1,71 @@
 import React, { useState } from 'react';
-import { SafeAreaView, ScrollView, StatusBar, StyleSheet, View } from 'react-native';
-import { RadioButton, Text } from 'react-native-paper';
+import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
+import { format } from 'date-fns';
 
 import colors from '../styles/colors';
 
+import { Question } from '../components/Question';
 import { Button } from '../components/Button';
 
 export function Questionnaire(){
     const navigation = useNavigation();
-    const [answerOne, setAnswerOne] = useState<string>('');
+    const [selectedDateTime, setSelectedDateTime] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(Platform.OS === 'ios');
+
+    const answersQuestionOne = ["Rock","Sertanejo","Forró","Gospel","Pop","Funk","RAP"]
+    const answersQuestionTwo = ["Churrasco","Caseira","Vegetariana","Fast Food","Japonesa","Italiana"]
+    const answersQuestionThree = ["Drama","Ação","Aventura","Romance","Animação","Suspense","Terror","Comédia"]
+    const answersQuestionFour = ["Futebol","Basquete","Volei","Tênis","Lutas"]
+    const answersQuestionFive = ["Palmeiras","Corinthians","Santos","São Paulo","Nenhum"]
+    const answersQuestionSix = ["Cristianismo","Judeu","Hinduísmo","Budismo","Judaísmo","Espiritismo","Nenhuma"]
+    const answersQuestionSeven = ["Sim","Não"]
+
+    const [answerOne, setAnswerOne] = useState<number>();
+    const [answerTwo, setAnswerTwo] = useState<number>();
+    const [answerThree, setAnswerThree] = useState<number>();
+    const [answerFour, setAnswerFour] = useState<number>();
+    const [answerFive, setAnswerFive] = useState<number>();
+    const [answerSix, setAnswerSix] = useState<number>();
+    const [answerSeven, setAnswerSeven] = useState<number>();
+
+    function handleChangeTime(event: Event, dateTime: Date | undefined){
+        if(Platform.OS === 'android'){
+            setShowDatePicker(oldState => !oldState);
+        }
+
+        if(dateTime){
+            setSelectedDateTime(dateTime);
+        }
+    }
+
+    function handleOpenDateTimePickerForAndroid(){
+        setShowDatePicker(oldState => !oldState);
+    }
 
     async function handleSubmit(){
+        const answers = [answerOne, answerTwo, answerThree, answerFour, answerFive, answerSix, answerSeven];
+        if (answers.includes(undefined)){
+            Alert.alert(
+                'Erro',
+                'Responda todas as perguntas para continuar!'
+            )
+            return;
+        }
+
+        const requestData = {
+            "Musics": answerOne,
+            "Foods": answerTwo,
+            "Movies": answerThree,
+            "Sports": answerFour,
+            "Teams": answerFive,
+            "Religions": answerSix,
+            "HaveChildren": answerSeven,
+            "DateBirthday": format(selectedDateTime, 'dd/MM/yyyy')
+        }
+        
+        // TODO: create request to save answers
         navigation.navigate('Home');
     }
 
@@ -30,19 +84,81 @@ export function Questionnaire(){
                     </Text>
                 </View>
 
-                <View style={styles.questionContainer}>
-                    <Text style={styles.question}>Qual gênero musical você mais gosta?</Text>
+                <Question
+                    questionLabel='Qual gênero musical você mais gosta?'
+                    selectedOption={answerOne}
+                    optionsList={answersQuestionOne}
+                    setState={setAnswerOne}
+                />
 
-                    <RadioButton.Group onValueChange={answer => setAnswerOne(answer)} value={answerOne}>
-                        <RadioButton.Item style={styles.answer} label='Rock' value='Rock' />
-                        <RadioButton.Item style={styles.answer} label='Sertanejo' value='Sertanejo' />
-                        <RadioButton.Item style={styles.answer} label='Forró' value='Forró' />
-                        <RadioButton.Item style={styles.answer} label='Gospel' value='Gospel' />
-                        <RadioButton.Item style={styles.answer} label='Pop' value='Pop' />
-                        <RadioButton.Item style={styles.answer} label='Funk' value='Funk' />
-                        <RadioButton.Item style={styles.answer} label='Rap' value='Rap' />
-                    </RadioButton.Group>
-                </View>
+                <Question
+                    questionLabel='Qual o seu tipo de comida favorito?'
+                    selectedOption={answerTwo}
+                    optionsList={answersQuestionTwo}
+                    setState={setAnswerTwo}
+                 />
+
+                <Question
+                    questionLabel='Qual o seu estilo de filme favorito?'
+                    selectedOption={answerThree}
+                    optionsList={answersQuestionThree}
+                    setState={setAnswerThree}
+                 />
+
+                <Question
+                    questionLabel='Qual seu esporte favorito?'
+                    selectedOption={answerFour}
+                    optionsList={answersQuestionFour}
+                    setState={setAnswerFour}
+                />
+
+                <Question
+                    questionLabel='Torce para algum time?'
+                    selectedOption={answerFive}
+                    optionsList={answersQuestionFive}
+                    setState={setAnswerFive}
+                 />
+
+                <Question
+                    questionLabel='Possui alguma religião?'
+                    selectedOption={answerSix}
+                    optionsList={answersQuestionSix}
+                    setState={setAnswerSix}
+                 />
+
+                <Question
+                    questionLabel='Tem filhos?'
+                    selectedOption={answerSeven}
+                    optionsList={answersQuestionSeven}
+                    setState={setAnswerSeven}
+                 />
+
+                <Text style={styles.dateTimeHeaderText}>Data de nascimento</Text>
+                {
+                    showDatePicker && (
+                    <DateTimePicker 
+                        value={selectedDateTime}
+                        style={styles.dateTimePickerButton}
+                        mode='date'
+                        display='spinner'
+                        onChange={handleChangeTime}
+                        maximumDate={new Date()}
+                        locale='pt-BR'
+                    />
+                )}
+
+                {
+                    Platform.OS === 'android' && (
+                        <TouchableOpacity 
+                            style={styles.dateTimePickerButton}
+                            onPress={handleOpenDateTimePickerForAndroid}
+                        >
+                            <Text style={styles.dateTimePickerText}>
+                                {`${format(selectedDateTime, 'dd/MM/yyyy')}`}
+                            </Text>
+                        </TouchableOpacity>
+                    )
+                }
 
                 <View style={styles.footer}>
                     <Button 
@@ -58,7 +174,7 @@ export function Questionnaire(){
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        height: StatusBar.currentHeight,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         paddingHorizontal: 20,
         alignItems: 'center'
     },
@@ -80,22 +196,24 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         color: colors.heading
     },
-    questionContainer: {
-        paddingBottom: 20,
-        marginBottom: 40
+    footer: {
+        alignItems: 'center',
+        marginBottom: 50
     },
-    question: {
+    dateTimeHeaderText: {
         fontSize: 17,
         paddingVertical: 10,
         color: colors.heading,
         fontWeight: 'bold'
     },
-    answer: {
-        height: 40,
-        paddingVertical: 0
-    },
-    footer: {
+    dateTimePickerButton: {
+        width: '100%',
         alignItems: 'center',
-        marginBottom: 50
+        paddingVertical: 12,
+        marginBottom: 40
+    },
+    dateTimePickerText: {
+        color: colors.heading,
+        fontSize: 24
     }
 })
