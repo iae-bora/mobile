@@ -1,32 +1,15 @@
 import React from 'react';
-import { Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { StatusBar, StyleSheet, Text, View } from 'react-native';
 
-import googleIconImg from '../assets/google-icon.png';
 import colors from '../styles/colors';
+import { GoogleSigninButton } from '../components/GoogleSignInButton';
 
 export function Login(){
-    const navigation = useNavigation();
-
-    async function handleSubmit(){
-        navigation.navigate('UserAddress');
-    }
-
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Login</Text>
 
-            <TouchableOpacity
-                style={styles.button}
-                onPress={handleSubmit}
-            >
-                <View style={styles.imageContainer}>
-                    <Image style={styles.googleImage} source={googleIconImg} />
-                </View>
-                <Text style={styles.buttonText}>
-                    Login com o Google
-                </Text>
-            </TouchableOpacity>
+            <GoogleSigninButton navigationRoute='UserAddress' />
         </View>
     )
 }
@@ -47,29 +30,5 @@ const styles = StyleSheet.create({
         lineHeight: 34,
         color: colors.heading,
         fontWeight: 'bold'
-    },
-    button: {
-        borderColor: colors.gray,
-        borderWidth: 1,
-        height: 56,
-        width: 188,
-        borderRadius: 16,
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center'
-    },
-    buttonText: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'
-    },
-    imageContainer: {
-        height: 24, 
-        width: 24
-    },
-    googleImage: {
-        flex: 1,
-        width: 24,
-        height: 24,
-        resizeMode: 'stretch'
     }
 })
