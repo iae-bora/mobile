@@ -17,8 +17,7 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true,
-      "package": "host.exp.exponent"
+      "supportsTablet": true
     },
     "android": {
       "adaptiveIcon": {

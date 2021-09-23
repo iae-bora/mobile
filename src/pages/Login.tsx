@@ -9,7 +9,10 @@ export function Login(){
         <View style={styles.container}>
             <Text style={styles.title}>Login</Text>
 
-            <GoogleSigninButton navigationRoute='UserAddress' />
+            <GoogleSigninButton 
+                navigationRoute='UserAddress'
+                registrationStep='address'
+            />
         </View>
     )
 }

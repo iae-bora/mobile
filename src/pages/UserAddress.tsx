@@ -8,19 +8,32 @@ import {
     KeyboardAvoidingView, 
     Platform, 
     TouchableWithoutFeedback, 
-    Keyboard
+    Keyboard,
+    Alert
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
+import { UserProps, saveUserData } from '../libs/storage';
 import { Button } from '../components/Button';
 
 import colors from '../styles/colors';
 
 export function UserAddress(){
     const navigation = useNavigation();
+    const routes = useRoute();
+
+    const userData = routes.params as UserProps;
 
     async function handleSubmit(){
-        navigation.navigate('Questionnaire');
+        try {
+            //TODO: request to create user in database
+            
+            const newUserData = {...userData, registrationStep: 'questionnaire'};
+            await saveUserData(newUserData);
+            navigation.navigate('Questionnaire', newUserData);   
+        } catch (error) {
+            Alert.alert('Erro', 'Ocorreu um erro ao tentar salvar os dados. Tente novamente');
+        }
     }
 
     return (

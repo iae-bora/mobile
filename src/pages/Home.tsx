@@ -1,18 +1,22 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { Header } from '../components/Header';
 import { Button } from '../components/Button';
+
+import { UserProps } from '../libs/storage';
 
 import colors from '../styles/colors';
 
 export function Home(){
     const navigation = useNavigation();
+    const route = useRoute();
+    const user = route.params as UserProps;
 
     return (
         <View style={styles.container}>
-            <Header />
+            <Header username={user.displayName} />
 
             <View style={styles.wrapper}>
                 <Button 
