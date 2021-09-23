@@ -3,13 +3,17 @@ import { StatusBar, StyleSheet, Text, View } from 'react-native';
 
 import colors from '../styles/colors';
 
-export function Header(){
+interface HeaderProps {
+    username: string;
+}
+
+export function Header(props: HeaderProps){
     return (
         <View style={styles.container}>
             <View>
                 <Text style={styles.greeting}>Olá,</Text>
                 <Text style={styles.userName}>
-                    Gustavo
+                    {props.username}
                 </Text>
             </View>
         </View>

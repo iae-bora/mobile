@@ -13,8 +13,9 @@ import { firebase } from "../services/firebase";
 import googleIconImg from '../assets/google-icon.png';
 import colors from '../styles/colors';
 
-type GoogleSignInButton = TouchableOpacityProps & {
+type GoogleSignInButton = {
     navigationRoute: string;
+    registrationStep: string;
 }
 
 export function GoogleSigninButton(props: GoogleSignInButton){
@@ -38,8 +39,9 @@ export function GoogleSigninButton(props: GoogleSignInButton){
             const user = firebaseResult.user;
             if (user){
                 const { email, photoURL, displayName, uid } = user;
+                const registrationStep = props.registrationStep;
 
-                navigation.navigate(props.navigationRoute, { email, photoURL, displayName, uid });
+                navigation.navigate(props.navigationRoute, { email, photoURL, displayName, uid, registrationStep });
             }
           }   
     }

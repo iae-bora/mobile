@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dimensions, Image, StatusBar, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -6,13 +6,33 @@ import logo from '../assets/logo.png';
 
 import { Button } from '../components/Button';
 import colors from '../styles/colors';
+import { UserProps, loadUserData, removeUserData } from '../libs/storage';
 
 export function Welcome() {
   const navigation = useNavigation();
+  const [user, setUser] = useState<UserProps>();
 
   function handleSubmit(){
     navigation.navigate('Login');
   }
+
+  useEffect(() => {
+    async function loadData(){
+      const data = await loadUserData() as UserProps;
+      setUser(data);
+
+      if(data){
+        if (data.registrationStep == 'questionnaire'){
+          navigation.navigate('Questionnaire', data);
+        }
+        else if(data.registrationStep == 'completed'){
+          navigation.navigate('Home', data);
+        }
+      }
+    }
+
+    loadData();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

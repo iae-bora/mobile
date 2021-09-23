@@ -1,16 +1,20 @@
 import React, { useState } from 'react';
 import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
 
 import colors from '../styles/colors';
 
+import { UserProps, saveUserData } from '../libs/storage';
 import { Question } from '../components/Question';
 import { Button } from '../components/Button';
 
 export function Questionnaire(){
     const navigation = useNavigation();
+    const route = useRoute();
+    const user = route.params as UserProps;
+
     const [selectedDateTime, setSelectedDateTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(Platform.OS === 'ios');
 
@@ -66,7 +70,9 @@ export function Questionnaire(){
         }
         
         // TODO: create request to save answers
-        navigation.navigate('Home');
+        const newUserData = {...user, registrationStep: 'completed'};
+        await saveUserData(newUserData);
+        navigation.navigate('Home', newUserData);
     }
 
     return (
