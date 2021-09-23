@@ -34,7 +34,7 @@ export function Home(){
                 <Button 
                     button_style={styles.button}
                     title='Revisar questionário'
-                    onPress={() => navigation.navigate('Questionnaire')} />
+                    onPress={() => navigation.navigate('Questionnaire', { ...user, status: 'update' })} />
             </View>
         </View>
     )

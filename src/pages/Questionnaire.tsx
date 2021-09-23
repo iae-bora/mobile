@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
@@ -7,13 +7,18 @@ import { format } from 'date-fns';
 import colors from '../styles/colors';
 
 import { UserProps, saveUserData } from '../libs/storage';
+import api from '../services/api';
 import { Question } from '../components/Question';
 import { Button } from '../components/Button';
+
+type RouteParams = UserProps & {
+    status: string;
+}
 
 export function Questionnaire(){
     const navigation = useNavigation();
     const route = useRoute();
-    const user = route.params as UserProps;
+    const user = route.params as RouteParams;
 
     const [selectedDateTime, setSelectedDateTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(Platform.OS === 'ios');
@@ -34,6 +39,28 @@ export function Questionnaire(){
     const [answerSix, setAnswerSix] = useState<number>();
     const [answerSeven, setAnswerSeven] = useState<number>();
 
+    useEffect(() => {
+        async function retrieveAnswers(){
+            const response = await api.get(`/answers/${user.uid}`);
+            if(response.status == 200){
+                const answers = response.data;
+
+                setAnswerOne(answers['Musics']);
+                setAnswerTwo(answers['Foods']);
+                setAnswerThree(answers['Movies']);
+                setAnswerFour(answers['Sports']);
+                setAnswerFive(answers['Teams']);
+                setAnswerSix(answers['Religions']);
+                setAnswerSeven(answers['HaveChildren']);
+                setSelectedDateTime(answers['DateBirthday'])
+            }
+        }
+
+        if(user.status == 'update'){
+            retrieveAnswers();
+        }
+    }, []);
+
     function handleChangeTime(event: Event, dateTime: Date | undefined){
         if(Platform.OS === 'android'){
             setShowDatePicker(oldState => !oldState);
@@ -51,11 +78,10 @@ export function Questionnaire(){
     async function handleSubmit(){
         const answers = [answerOne, answerTwo, answerThree, answerFour, answerFive, answerSix, answerSeven];
         if (answers.includes(undefined)){
-            Alert.alert(
+            return Alert.alert(
                 'Erro',
                 'Responda todas as perguntas para continuar!'
             )
-            return;
         }
 
         const requestData = {
@@ -68,11 +94,20 @@ export function Questionnaire(){
             "HaveChildren": answerSeven,
             "DateBirthday": format(selectedDateTime, 'dd/MM/yyyy')
         }
-        
-        // TODO: create request to save answers
-        const newUserData = {...user, registrationStep: 'completed'};
-        await saveUserData(newUserData);
-        navigation.navigate('Home', newUserData);
+
+        let response;
+        if(user.status == 'create'){
+            response = await api.post('/answers', requestData);
+        }
+        else{
+            response = await api.put('/answers', requestData);
+        }
+
+        if(response.status == 200){
+            const newUserData = {...user, registrationStep: 'completed'};
+            await saveUserData(newUserData);
+            navigation.navigate('Home', newUserData);
+        }
     }
 
     return (

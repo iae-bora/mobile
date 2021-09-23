@@ -6,7 +6,7 @@ import logo from '../assets/logo.png';
 
 import { Button } from '../components/Button';
 import colors from '../styles/colors';
-import { UserProps, loadUserData, removeUserData } from '../libs/storage';
+import { UserProps, loadUserData } from '../libs/storage';
 
 export function Welcome() {
   const navigation = useNavigation();

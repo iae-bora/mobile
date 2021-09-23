@@ -1,18 +1,30 @@
 import React, { useState } from 'react';
-import { TextInput, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { TextInput, StatusBar, StyleSheet, Text, View, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 import colors from '../styles/colors';
 
 import { Button } from '../components/Button';
 
+import api from '../services/api';
+
 export function AskRecommendation(){
     const navigation = useNavigation();
-    const [distance, setDistance] = useState('5 km');
+    const [distance, setDistance] = useState('5');
     const [localsQuantity, setLocalsQuantity] = useState('1');
 
     async function handleSubmit(){
-        navigation.navigate('Recommendation');
+        const response = await api.post('/routes', {
+            distance,
+            localsQuantity
+        });
+
+        if(response.status == 200){
+            navigation.navigate('Recommendation', response.data);
+        }
+        else {
+            return Alert.alert('Erro', 'Ocorreu um erro ao tentar salvar os dados. Tente novamente');
+        }
     }
 
     return (
@@ -22,7 +34,7 @@ export function AskRecommendation(){
             </View>
 
             <View style={styles.filterContainer}>
-                <Text style={styles.filter}>Distância</Text>
+                <Text style={styles.filter}>Distância (km)</Text>
 
                 <TextInput style={styles.filterInput} value={distance} onChangeText={text => setDistance(text)} />
             </View>
