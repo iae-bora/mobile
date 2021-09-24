@@ -1,14 +1,36 @@
 import React from 'react';
 import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
 import colors from '../styles/colors';
 
 import { Button } from '../components/Button';
 
+interface TouristicSpotProps {
+    id: number;
+    place: {
+        id: number;
+        name: string;
+        image: string;
+        business_status: string;
+        address: string;
+        phone?: string;
+    }
+    opening_hours: {
+        id: number;
+        day_of_week: string;
+        open: boolean;
+        start_hour?: string;
+        end_hour?: string;
+    }
+}
+
 export function Recommendation(){
     const navigation = useNavigation();
+    const route = useRoute();
+
+    const params = route.params as Array<TouristicSpotProps>;
 
     async function handleSubmit(){
         navigation.navigate('Home');
@@ -22,27 +44,20 @@ export function Recommendation(){
                 </View>
 
                 <View style={styles.content}>
-                    <View style={styles.cardWrapper}>
-                        <Card>
-                            <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
-                            <Card.Content style={styles.cardContent}>
-                                <Title>Parque Raphael Lazzuri</Title>
-                                <Paragraph>Avenida Kennedy, 111</Paragraph>
-                                <Paragraph>6h - 22h</Paragraph>
-                            </Card.Content>
-                        </Card>
-                    </View>
-
-                    <View style={styles.cardWrapper}>
-                        <Card>
-                            <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
-                            <Card.Content style={styles.cardContent}>
-                                <Title>Parque Raphael Lazzuri</Title>
-                                <Paragraph>Avenida Kennedy, 111</Paragraph>
-                                <Paragraph>6h - 22h</Paragraph>
-                            </Card.Content>
-                        </Card>
-                    </View>
+                    {params.map(touristicSpot => {
+                        return (
+                            <View key={touristicSpot.id} style={styles.cardWrapper}>
+                                <Card>
+                                    <Card.Cover source={{ uri: touristicSpot.place.image }} />
+                                    <Card.Content style={styles.cardContent}>
+                                        <Title>{touristicSpot.place.name}</Title>
+                                        <Paragraph>{touristicSpot.place.address}</Paragraph>
+                                        <Paragraph>{touristicSpot.opening_hours.start_hour} - {touristicSpot.opening_hours.end_hour}</Paragraph>
+                                    </Card.Content>
+                                </Card>
+                            </View>
+                        )
+                    })}
                 </View>
 
                 <View style={styles.footer}>

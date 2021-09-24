@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
     SafeAreaView, 
     View, 
@@ -14,6 +14,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import { UserProps, saveUserData } from '../libs/storage';
+import api from '../services/api';
 import { Button } from '../components/Button';
 
 import colors from '../styles/colors';
@@ -21,19 +22,38 @@ import colors from '../styles/colors';
 export function UserAddress(){
     const navigation = useNavigation();
     const routes = useRoute();
+    const [address, setAddress] = useState<string>();
 
     const userData = routes.params as UserProps;
 
     async function handleSubmit(){
         try {
-            //TODO: request to create user in database
-            
-            const newUserData = {...userData, registrationStep: 'questionnaire'};
-            await saveUserData(newUserData);
-            navigation.navigate('Questionnaire', newUserData);   
+            if(!address){
+                return Alert.alert('Digite seu endereço!');
+            }
+            // const response = await api.post('/users', {
+            //     ...userData,
+            //     address
+            // });
+            const response = {
+                status: 200
+            }
+
+            if(response.status == 200){
+                const newUserData = {...userData, registrationStep: 'questionnaire', status: 'create'};
+                await saveUserData(newUserData);
+                navigation.navigate('Questionnaire', newUserData); 
+            }
+            else {
+                return Alert.alert('Erro', 'Ocorreu um erro ao tentar salvar os dados. Tente novamente');
+            }
         } catch (error) {
             Alert.alert('Erro', 'Ocorreu um erro ao tentar salvar os dados. Tente novamente');
         }
+    }
+
+    function handleInputChange(value: string){
+        setAddress(value);
     }
 
     return (
@@ -58,6 +78,8 @@ export function UserAddress(){
 
                             <TextInput 
                                 style={styles.input}
+                                placeholder='Digite seu endereço'
+                                onChangeText={handleInputChange}
                             ></TextInput>
 
                             <View style={styles.footer}>
