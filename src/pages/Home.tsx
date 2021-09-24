@@ -28,7 +28,7 @@ export function Home(){
                 <Button 
                     button_style={styles.button} 
                     title='Histórico de rotas'
-                    onPress={() => navigation.navigate('TourHistory')}
+                    onPress={() => navigation.navigate('TourHistory', user)}
                 />
 
                 <Button 

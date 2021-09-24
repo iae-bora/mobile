@@ -10,14 +10,36 @@ import api from '../services/api';
 
 export function AskRecommendation(){
     const navigation = useNavigation();
-    const [distance, setDistance] = useState('5');
-    const [localsQuantity, setLocalsQuantity] = useState('1');
+    const [distance, setDistance] = useState(5);
+    const [localsQuantity, setLocalsQuantity] = useState(1);
 
     async function handleSubmit(){
-        const response = await api.post('/routes', {
-            distance,
-            localsQuantity
-        });
+        // const response = await api.post('/routes', {
+        //     distance,
+        //     localsQuantity
+        // });
+        const response = {
+            status: 200,
+            data: [{
+                id: 1,
+                place: {
+                    id: 2,
+                    name: 'Parque Raphael Lazzuri',
+                    address: 'Av. Kennedy, 1111 - Anchieta, São Bernardo do Campo - SP, 09726-263, Brasil',
+                    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/08/6e/2c/3a/parque-rafael-lazzuri.jpg?w=300&h=300&s=1',
+                    business_status: 'OPERATIONAL',
+                    phone: '(11) 4332-4510',
+                    category_id: 1
+                },
+                opening_hours: {
+                    id: 10,
+                    day_of_week: 'sexta-feira',
+                    open: true,
+                    start_hour: '6:00',
+                    end_hour: '22:00'
+                }
+            }]
+        }
 
         if(response.status == 200){
             navigation.navigate('Recommendation', response.data);
@@ -36,13 +58,13 @@ export function AskRecommendation(){
             <View style={styles.filterContainer}>
                 <Text style={styles.filter}>Distância (km)</Text>
 
-                <TextInput style={styles.filterInput} value={distance} onChangeText={text => setDistance(text)} />
+                <TextInput style={styles.filterInput} value={distance.toString()} onChangeText={text => setDistance(+text)} />
             </View>
 
             <View style={styles.filterContainer}>
                 <Text style={styles.filter}>Quantidade de locais</Text>
 
-                <TextInput style={styles.filterInput} value={localsQuantity} onChangeText={text => setLocalsQuantity(text)} />
+                <TextInput style={styles.filterInput} value={localsQuantity.toString()} onChangeText={text => setLocalsQuantity(+text)} />
             </View>
 
             <View style={styles.footer}>

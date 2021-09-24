@@ -31,10 +31,13 @@ export function UserAddress(){
             if(!address){
                 return Alert.alert('Digite seu endereço!');
             }
-            const response = await api.post('/users', {
-                ...userData,
-                address
-            });
+            // const response = await api.post('/users', {
+            //     ...userData,
+            //     address
+            // });
+            const response = {
+                status: 200
+            }
 
             if(response.status == 200){
                 const newUserData = {...userData, registrationStep: 'questionnaire', status: 'create'};

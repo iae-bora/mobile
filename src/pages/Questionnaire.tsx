@@ -54,6 +54,10 @@ export function Questionnaire(){
                 setAnswerSeven(answers['HaveChildren']);
                 setSelectedDateTime(answers['DateBirthday'])
             }
+            else{
+                Alert.alert('Erro', 'Não foi possível carregar suas respostas. Tente novamente');
+                navigation.goBack();
+            }
         }
 
         if(user.status == 'update'){
@@ -97,7 +101,10 @@ export function Questionnaire(){
 
         let response;
         if(user.status == 'create'){
-            response = await api.post('/answers', requestData);
+            // response = await api.post('/answers', requestData);
+            response = {
+                status: 200
+            }
         }
         else{
             response = await api.put('/answers', requestData);
