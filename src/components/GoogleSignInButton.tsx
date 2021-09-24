@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { 
     IOS_CLIENT_ID,
     ANDROID_CLIENT_ID,
+    IOS_STANDALONE_APP_CLIENT_ID,
     ANDROID_STANDALONE_APP_CLIENT_ID
     } from '@env';
 
@@ -25,6 +26,7 @@ export function GoogleSigninButton(props: GoogleSignInButton){
         const result = await Google.logInAsync({
             iosClientId: IOS_CLIENT_ID,
             androidClientId: ANDROID_CLIENT_ID,
+            iosStandaloneAppClientId: IOS_STANDALONE_APP_CLIENT_ID,
             androidStandaloneAppClientId: ANDROID_STANDALONE_APP_CLIENT_ID,
             scopes: ['profile', 'email']
         });
