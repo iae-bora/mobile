@@ -105,7 +105,7 @@ export function TourHistory(){
                         return (
                             <View key={touristicSpotRoute.id} style={styles.listWrapper}>
                                 <List.Section>
-                                    <List.Subheader style={styles.subheader}>12/08/2021</List.Subheader>
+                                    <List.Subheader style={styles.subheader}>24/09/2021</List.Subheader>
                                     {touristicSpotRoute.places.map(touristicSpot => {
                                         return (
                                             <View key={touristicSpot.id}>

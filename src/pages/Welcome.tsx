@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Dimensions, Image, StatusBar, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
@@ -10,7 +10,6 @@ import { UserProps, loadUserData } from '../libs/storage';
 
 export function Welcome() {
   const navigation = useNavigation();
-  const [user, setUser] = useState<UserProps>();
 
   function handleSubmit(){
     navigation.navigate('Login');
@@ -19,7 +18,6 @@ export function Welcome() {
   useEffect(() => {
     async function loadData(){
       const data = await loadUserData() as UserProps;
-      setUser(data);
 
       if(data){
         if (data.registrationStep == 'questionnaire'){
