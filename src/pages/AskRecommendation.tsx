@@ -38,6 +38,25 @@ export function AskRecommendation(){
                     start_hour: '6:00',
                     end_hour: '22:00'
                 }
+            },
+            {
+                id: 2,
+                place: {
+                    id: 4,
+                    name: 'Golden Square Shopping',
+                    address: 'Av. Kennedy, 1111 - Anchieta, São Bernardo do Campo - SP, 09726-263, Brasil',
+                    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/08/6e/2c/3a/parque-rafael-lazzuri.jpg?w=300&h=300&s=1',
+                    business_status: 'OPERATIONAL',
+                    phone: '(11) 4332-4510',
+                    category_id: 1
+                },
+                opening_hours: {
+                    id: 20,
+                    day_of_week: 'sexta-feira',
+                    open: true,
+                    start_hour: '6:00',
+                    end_hour: '22:00'
+                }
             }]
         }
 
