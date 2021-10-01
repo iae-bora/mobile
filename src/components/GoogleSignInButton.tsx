@@ -43,7 +43,7 @@ export function GoogleSigninButton(props: GoogleSignInButton){
                 const { email, photoURL, displayName, uid } = user;
                 const registrationStep = props.registrationStep;
 
-                navigation.navigate(props.navigationRoute, { email, photoURL, displayName, uid, registrationStep });
+                navigation.navigate(props.navigationRoute, { email, photoURL, displayName, googleId: uid, registrationStep });
             }
           }   
     }

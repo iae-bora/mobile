@@ -4,8 +4,9 @@ export interface UserProps {
     displayName: string;
     email: string;
     photoUrl: string;
-    uid: string;
+    googleId: string;
     registrationStep: string;
+    address?: string;
 }
 
 export async function saveUserData(user: UserProps){

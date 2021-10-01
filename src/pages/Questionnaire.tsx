@@ -10,9 +10,12 @@ import { UserProps, saveUserData } from '../libs/storage';
 import api from '../services/api';
 import { Question } from '../components/Question';
 import { Button } from '../components/Button';
+import { TextInput } from 'react-native-gesture-handler';
 
 type RouteParams = UserProps & {
     status: string;
+    googleId: string;
+    address: string;
 }
 
 export function Questionnaire(){
@@ -22,6 +25,7 @@ export function Questionnaire(){
 
     const [selectedDateTime, setSelectedDateTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(Platform.OS === 'ios');
+    const [age, setAge] = useState<number>();
 
     const answersQuestionOne = ["Rock","Sertanejo","Forró","Gospel","Pop","Funk","RAP"]
     const answersQuestionTwo = ["Churrasco","Caseira","Vegetariana","Fast Food","Japonesa","Italiana"]
@@ -29,7 +33,7 @@ export function Questionnaire(){
     const answersQuestionFour = ["Futebol","Basquete","Volei","Tênis","Lutas"]
     const answersQuestionFive = ["Palmeiras","Corinthians","Santos","São Paulo","Nenhum"]
     const answersQuestionSix = ["Cristianismo","Judeu","Hinduísmo","Budismo","Judaísmo","Espiritismo","Nenhuma"]
-    const answersQuestionSeven = ["Sim","Não"]
+    const answersQuestionSeven = ["Não", "Sim"]
 
     const [answerOne, setAnswerOne] = useState<number>();
     const [answerTwo, setAnswerTwo] = useState<number>();
@@ -38,10 +42,11 @@ export function Questionnaire(){
     const [answerFive, setAnswerFive] = useState<number>();
     const [answerSix, setAnswerSix] = useState<number>();
     const [answerSeven, setAnswerSeven] = useState<number>();
+    const [placesCount, setPlacesCount] = useState<number>();
 
     useEffect(() => {
         async function retrieveAnswers(){
-            const response = await api.get(`/answers/${user.uid}`);
+            const response = await api.get(`/answers/${user.googleId}`);
             if(response.status == 200){
                 const answers = response.data;
 
@@ -89,14 +94,19 @@ export function Questionnaire(){
         }
 
         const requestData = {
-            "Musics": answerOne,
-            "Foods": answerTwo,
-            "Movies": answerThree,
-            "Sports": answerFour,
-            "Teams": answerFive,
-            "Religions": answerSix,
-            "HaveChildren": answerSeven,
-            "DateBirthday": format(selectedDateTime, 'dd/MM/yyyy')
+            "musics": answerOne,
+            "foods": answerTwo,
+            "movies": answerThree,
+            "sports": answerFour,
+            "teams": answerFive,
+            "religions": answerSix,
+            "haveChildren": answerSeven,
+            "userAge": age,
+            "placesCount": placesCount,
+            "user": {
+                "googleId": user.googleId,
+                "address": user.address
+            }
         }
 
         let response;
@@ -181,32 +191,19 @@ export function Questionnaire(){
                     setState={setAnswerSeven}
                  />
 
-                <Text style={styles.dateTimeHeaderText}>Data de nascimento</Text>
-                {
-                    showDatePicker && (
-                    <DateTimePicker 
-                        value={selectedDateTime}
-                        style={styles.dateTimePickerButton}
-                        mode='date'
-                        display='spinner'
-                        onChange={handleChangeTime}
-                        maximumDate={new Date()}
-                        locale='pt-BR'
-                    />
-                )}
+                <Text style={styles.dateTimeHeaderText}>Idade</Text>
+                <TextInput
+                    keyboardType='numeric'
+                    value={age?.toString()}
+                    onChangeText={text => setAge(+text)}
+                />
 
-                {
-                    Platform.OS === 'android' && (
-                        <TouchableOpacity 
-                            style={styles.dateTimePickerButton}
-                            onPress={handleOpenDateTimePickerForAndroid}
-                        >
-                            <Text style={styles.dateTimePickerText}>
-                                {`${format(selectedDateTime, 'dd/MM/yyyy')}`}
-                            </Text>
-                        </TouchableOpacity>
-                    )
-                }
+                <Text style={styles.dateTimeHeaderText}>Quantidade de locais</Text>
+                <TextInput
+                    keyboardType='numeric'
+                    value={placesCount?.toString()}
+                    onChangeText={text => setPlacesCount(+text)}
+                />
 
                 <View style={styles.footer}>
                     <Button 
