@@ -3,7 +3,6 @@ import {
     SafeAreaView, 
     View, 
     Text, 
-    TextInput, 
     StyleSheet, 
     KeyboardAvoidingView, 
     Platform, 
@@ -12,6 +11,7 @@ import {
     Alert
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { MaskedTextInput} from "react-native-mask-text";
 
 import { UserProps, saveUserData } from '../libs/storage';
 import api from '../services/api';
@@ -29,10 +29,10 @@ export function UserAddress(){
     async function handleSubmit(){
         try {
             if(!address){
-                return Alert.alert('Digite seu endereço!');
+                return Alert.alert('Digite seu CEP!');
             }
             // const response = await api.post('/users', {
-            //     ...userData,
+            //     userData.uid,
             //     address
             // });
             const response = {
@@ -40,7 +40,7 @@ export function UserAddress(){
             }
 
             if(response.status == 200){
-                const newUserData = {...userData, registrationStep: 'questionnaire', status: 'create'};
+                const newUserData = {...userData, address, registrationStep: 'questionnaire', status: 'create'};
                 await saveUserData(newUserData);
                 navigation.navigate('Questionnaire', newUserData); 
             }
@@ -52,7 +52,7 @@ export function UserAddress(){
         }
     }
 
-    function handleInputChange(value: string){
+    function handleInputChange(value: string | undefined){
         setAddress(value);
     }
 
@@ -76,11 +76,13 @@ export function UserAddress(){
                                 </Text>
                             </View>
 
-                            <TextInput 
+                            <MaskedTextInput 
                                 style={styles.input}
-                                placeholder='Digite seu endereço'
-                                onChangeText={handleInputChange}
-                            ></TextInput>
+                                placeholder='CEP'
+                                onChangeText={(text: string, rawText: string) => handleInputChange(rawText)}
+                                mask='99999-999'
+                                keyboardType='numeric'
+                            ></MaskedTextInput>
 
                             <View style={styles.footer}>
                                 <Button 
