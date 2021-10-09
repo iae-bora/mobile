@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "IAe, Bora?",
+    "slug": "iaebora",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -24,7 +24,14 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "host.exp.exponent"
+      "package": "com.iaebora.optime",
+      "versionCode": 12,
+      "config": {
+        "googleSignIn": {
+          "apiKey": "<GOOGLE_APIKEY>",
+          "certificateHash": "<GOOGLE_FINGERPRINT>"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
