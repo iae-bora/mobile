@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
-import { format } from 'date-fns';
 
 import colors from '../styles/colors';
 
@@ -10,6 +8,7 @@ import { UserProps, saveUserData } from '../libs/storage';
 import api from '../services/api';
 import { Question } from '../components/Question';
 import { Button } from '../components/Button';
+import { TextInput } from 'react-native-gesture-handler';
 
 type RouteParams = UserProps & {
     status: string;
@@ -20,17 +19,15 @@ export function Questionnaire(){
     const route = useRoute();
     const user = route.params as RouteParams;
 
-    const [selectedDateTime, setSelectedDateTime] = useState(new Date());
-    const [showDatePicker, setShowDatePicker] = useState(Platform.OS === 'ios');
-
     const answersQuestionOne = ["Rock","Sertanejo","Forró","Gospel","Pop","Funk","RAP"]
     const answersQuestionTwo = ["Churrasco","Caseira","Vegetariana","Fast Food","Japonesa","Italiana"]
     const answersQuestionThree = ["Drama","Ação","Aventura","Romance","Animação","Suspense","Terror","Comédia"]
     const answersQuestionFour = ["Futebol","Basquete","Volei","Tênis","Lutas"]
     const answersQuestionFive = ["Palmeiras","Corinthians","Santos","São Paulo","Nenhum"]
-    const answersQuestionSix = ["Cristianismo","Judeu","Hinduísmo","Budismo","Judaísmo","Espiritismo","Nenhuma"]
-    const answersQuestionSeven = ["Sim","Não"]
+    const answersQuestionSix = ["Cristianismo","Hinduísmo","Budismo","Judaísmo","Espiritismo","Nenhuma"]
+    const answersQuestionSeven = ["Não","Sim"]
 
+    const [id, setId] = useState();
     const [answerOne, setAnswerOne] = useState<number>();
     const [answerTwo, setAnswerTwo] = useState<number>();
     const [answerThree, setAnswerThree] = useState<number>();
@@ -38,25 +35,33 @@ export function Questionnaire(){
     const [answerFive, setAnswerFive] = useState<number>();
     const [answerSix, setAnswerSix] = useState<number>();
     const [answerSeven, setAnswerSeven] = useState<number>();
+    const [age, setAge] = useState<number>();
+    const [placesCount, setPlacesCount] = useState(0);
 
     useEffect(() => {
         async function retrieveAnswers(){
-            const response = await api.get(`/answers/${user.uid}`);
-            if(response.status == 200){
-                const answers = response.data;
+            try {
+                const response = await api.get(`/answers/${user.id}`);
+                if(response.status == 200){
+                    const answers = response.data;
 
-                setAnswerOne(answers['Musics']);
-                setAnswerTwo(answers['Foods']);
-                setAnswerThree(answers['Movies']);
-                setAnswerFour(answers['Sports']);
-                setAnswerFive(answers['Teams']);
-                setAnswerSix(answers['Religions']);
-                setAnswerSeven(answers['HaveChildren']);
-                setSelectedDateTime(answers['DateBirthday'])
-            }
-            else{
-                Alert.alert('Erro', 'Não foi possível carregar suas respostas. Tente novamente');
-                navigation.goBack();
+                    setAnswerOne(answers['musics']);
+                    setAnswerTwo(answers['food']);
+                    setAnswerThree(answers['movies']);
+                    setAnswerFour(answers['sports']);
+                    setAnswerFive(answers['teams']);
+                    setAnswerSix(answers['religion']);
+                    setAnswerSeven(answers['haveChildren']);
+                    setAge(answers['userAge']);
+                    setPlacesCount(answers['placesCount']);
+                    setId(answers['id']);
+                }
+                else{
+                    Alert.alert('Erro', 'Não foi possível carregar suas respostas. Tente novamente');
+                    navigation.goBack();
+                }
+            } catch (error: any) {
+                return;
             }
         }
 
@@ -65,55 +70,53 @@ export function Questionnaire(){
         }
     }, []);
 
-    function handleChangeTime(event: Event, dateTime: Date | undefined){
-        if(Platform.OS === 'android'){
-            setShowDatePicker(oldState => !oldState);
-        }
-
-        if(dateTime){
-            setSelectedDateTime(dateTime);
-        }
-    }
-
-    function handleOpenDateTimePickerForAndroid(){
-        setShowDatePicker(oldState => !oldState);
-    }
-
     async function handleSubmit(){
         const answers = [answerOne, answerTwo, answerThree, answerFour, answerFive, answerSix, answerSeven];
-        if (answers.includes(undefined)){
+        if (answers.includes(undefined) || !age){
             return Alert.alert(
                 'Erro',
                 'Responda todas as perguntas para continuar!'
             )
         }
 
+        if(age <= 0){
+            return Alert.alert('Erro', 'A idade precisa ser maior ou igual a 1');
+        }
+
         const requestData = {
-            "Musics": answerOne,
-            "Foods": answerTwo,
-            "Movies": answerThree,
-            "Sports": answerFour,
-            "Teams": answerFive,
-            "Religions": answerSix,
-            "HaveChildren": answerSeven,
-            "DateBirthday": format(selectedDateTime, 'dd/MM/yyyy')
-        }
-
-        let response;
-        if(user.status == 'create'){
-            // response = await api.post('/answers', requestData);
-            response = {
-                status: 200
+            "musics": answerOne,
+            "food": answerTwo,
+            "movies": answerThree,
+            "sports": answerFour,
+            "teams": answerFive,
+            "religion": answerSix,
+            "haveChildren": answerSeven,
+            "userAge": age,
+            "placesCount": placesCount,
+            "user": {
+                "googleId": user.id,
+                "address": user.address
             }
-        }
-        else{
-            response = await api.put('/answers', requestData);
-        }
+        };
 
-        if(response.status == 200){
-            const newUserData = {...user, registrationStep: 'completed'};
-            await saveUserData(newUserData);
-            navigation.navigate('Home', newUserData);
+        try {
+            let response;
+            if(user.status == 'create'){
+                response = await api.post('/answers', requestData);
+            }
+            else{
+                Object.assign(requestData, { id });
+                response = await api.put('/answers', requestData);
+            }
+
+            if(response.status == 200){
+                const newUserData = {...user, registrationStep: 'completed'};
+                await saveUserData(newUserData);
+                navigation.navigate('Home', newUserData);
+            }            
+        } catch (error: any) {
+            console.log(error.response);
+            Alert.alert('Ocorreu um erro ao tentar salvar suas respostas, tente novamente');
         }
     }
 
@@ -181,32 +184,13 @@ export function Questionnaire(){
                     setState={setAnswerSeven}
                  />
 
-                <Text style={styles.dateTimeHeaderText}>Data de nascimento</Text>
-                {
-                    showDatePicker && (
-                    <DateTimePicker 
-                        value={selectedDateTime}
-                        style={styles.dateTimePickerButton}
-                        mode='date'
-                        display='spinner'
-                        onChange={handleChangeTime}
-                        maximumDate={new Date()}
-                        locale='pt-BR'
-                    />
-                )}
-
-                {
-                    Platform.OS === 'android' && (
-                        <TouchableOpacity 
-                            style={styles.dateTimePickerButton}
-                            onPress={handleOpenDateTimePickerForAndroid}
-                        >
-                            <Text style={styles.dateTimePickerText}>
-                                {`${format(selectedDateTime, 'dd/MM/yyyy')}`}
-                            </Text>
-                        </TouchableOpacity>
-                    )
-                }
+                <Text style={styles.textInputHeader}>Idade</Text>
+                <TextInput
+                    style={styles.textInput}
+                    value={age?.toString()}
+                    onChangeText={value => setAge(parseInt(value.replace(/[^0-9]/g, '')))}
+                    keyboardType='numeric'
+                />
 
                 <View style={styles.footer}>
                     <Button 
@@ -248,20 +232,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 50
     },
-    dateTimeHeaderText: {
+    textInputHeader: {
         fontSize: 17,
         paddingVertical: 10,
         color: colors.heading,
         fontWeight: 'bold'
     },
-    dateTimePickerButton: {
-        width: '100%',
-        alignItems: 'center',
+    textInput: {
+        width: 60,
         paddingVertical: 12,
-        marginBottom: 40
-    },
-    dateTimePickerText: {
+        marginBottom: 40,
+        borderWidth: 1,
+        borderRadius: 8,
+        borderColor: colors.gray,
         color: colors.heading,
-        fontSize: 24
+        textAlign: 'right',
+        paddingHorizontal: 10
     }
 })
