@@ -29,20 +29,17 @@ export function UserAddress(){
     async function handleSubmit(){
         try {
             if(!address){
-                return Alert.alert('Digite seu endereço!');
+                return Alert.alert('Digite seu CEP!');
             }
-            // const response = await api.post('/users', {
-            //     ...userData,
-            //     address
-            // });
-            const response = {
-                status: 200
-            }
+            const response = await api.post('/users', {
+                googleId: userData.id,
+                address
+            });
 
             if(response.status == 200){
-                const newUserData = {...userData, registrationStep: 'questionnaire', status: 'create'};
+                const newUserData = {...userData, address, registrationStep: 'questionnaire'};
                 await saveUserData(newUserData);
-                navigation.navigate('Questionnaire', newUserData); 
+                navigation.navigate('Questionnaire', {...newUserData, status: 'create'});
             }
             else {
                 return Alert.alert('Erro', 'Ocorreu um erro ao tentar salvar os dados. Tente novamente');
@@ -67,7 +64,7 @@ export function UserAddress(){
                         <View style={styles.form}>
                             <View style={styles.header}>
                                 <Text style={styles.title}>
-                                    Qual seu endereço?
+                                    Qual seu CEP?
                                 </Text>
 
                                 <Text style={styles.subtitle}>
@@ -78,8 +75,9 @@ export function UserAddress(){
 
                             <TextInput 
                                 style={styles.input}
-                                placeholder='Digite seu endereço'
+                                placeholder='Digite seu CEP'
                                 onChangeText={handleInputChange}
+                                keyboardType='number-pad'
                             ></TextInput>
 
                             <View style={styles.footer}>
