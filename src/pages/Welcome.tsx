@@ -21,7 +21,7 @@ export function Welcome() {
 
       if(data){
         if (data.registrationStep == 'questionnaire'){
-          navigation.navigate('Questionnaire', data);
+          navigation.navigate('Questionnaire', {...data, status: 'create'});
         }
         else if(data.registrationStep == 'completed'){
           navigation.navigate('Home', data);
