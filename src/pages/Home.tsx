@@ -16,7 +16,7 @@ export function Home(){
 
     return (
         <View style={styles.container}>
-            <Header username={user.displayName} />
+            <Header username={user.displayName || ''} />
 
             <View style={styles.wrapper}>
                 <Button 
