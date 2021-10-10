@@ -1,5 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Google from 'expo-google-app-auth';
 import { useNavigation } from '@react-navigation/native';
 import { 
@@ -9,10 +9,10 @@ import {
     ANDROID_STANDALONE_APP_CLIENT_ID
     } from '@env';
 
-import { firebase } from "../services/firebase";
-
 import googleIconImg from '../assets/google-icon.png';
 import colors from '../styles/colors';
+import api from '../services/api';
+import { saveUserData } from '../libs/storage';
 
 type GoogleSignInButton = {
     navigationRoute: string;
@@ -31,21 +31,56 @@ export function GoogleSigninButton(props: GoogleSignInButton){
             scopes: ['profile', 'email']
         });
           
-          if (result.type === 'success') {
-            const { idToken, accessToken } = result;
-            const credential = firebase.auth.GoogleAuthProvider.credential(
-                idToken, accessToken
-            );
+        if (result.type === 'success') {
+            const { photoUrl, name, id } = result.user;
+            console.log(id);
 
-            const firebaseResult = await firebase.auth().signInWithCredential(credential);
-            const user = firebaseResult.user;
-            if (user){
-                const { email, photoURL, displayName, uid } = user;
-                const registrationStep = props.registrationStep;
+            try {
+                const { data, status } = await api.get(`/users/${id}`);
+                if(status == 200){
+                    console.log(data);
+                    try {
+                        const answers = await api.get(`/answers/${id}`);
+                        if(answers.status == 200){
+                            const user = { 
+                                id: id, 
+                                displayName: name, 
+                                photoUrl: photoUrl, 
+                                address: data.address,
+                                registrationStep: 'completed' 
+                            };
+        
+                            await saveUserData(user);
+                            return navigation.navigate('Home', user);
+                        }
+                    } catch (error: any) {
+                        if(error.response.status == 400){
+                            const user = { 
+                                id: id, 
+                                displayName: name, 
+                                photoUrl: photoUrl, 
+                                address: data.address,
+                                registrationStep: 'questionnaire' 
+                            };
 
-                navigation.navigate(props.navigationRoute, { email, photoURL, displayName, uid, registrationStep });
+                            await saveUserData(user);
+                            return navigation.navigate('Questionnaire', {...user, status: 'create'});
+                        }
+                        else{
+                            return Alert.alert('Erro ao tentar relizar a autenticação, tente novamente');
+                        }
+                    }
+                }
+                else{
+                    return Alert.alert('Erro ao obter os dados. Tente novamente');
+                }
+            } catch (error: any) {
+                if(error.response.status == 400){
+                    const registrationStep = props.registrationStep;
+                    return navigation.navigate(props.navigationRoute, { photoUrl, name, id, registrationStep });
+                }
             }
-          }   
+        }
     }
 
     return (
@@ -57,7 +92,7 @@ export function GoogleSigninButton(props: GoogleSignInButton){
                 <Image style={styles.googleImage} source={googleIconImg} />
             </View>
             <Text style={styles.buttonText}>
-                Login com o Google
+                Login com Google
             </Text>
         </TouchableOpacity>
     )

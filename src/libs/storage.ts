@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface UserProps {
-    displayName: string;
-    email: string;
-    photoUrl: string;
-    uid: string;
+    displayName: string | undefined;
+    photoUrl: string | undefined;
+    id: string | undefined;
+    address?: string;
     registrationStep: string;
 }
 
