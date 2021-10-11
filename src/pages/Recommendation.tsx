@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 import colors from '../styles/colors';
 
 import { Button } from '../components/Button';
-import { Route } from '../types/touristicPoint';
+import { Route } from '../types/touristPoint';
 
 export function Recommendation(){
     const navigation = useNavigation();
