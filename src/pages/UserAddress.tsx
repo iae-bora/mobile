@@ -3,7 +3,6 @@ import {
     SafeAreaView, 
     View, 
     Text, 
-    TextInput, 
     StyleSheet, 
     KeyboardAvoidingView, 
     Platform, 
@@ -12,6 +11,7 @@ import {
     Alert
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { MaskedTextInput } from 'react-native-mask-text';
 
 import { UserProps, saveUserData } from '../libs/storage';
 import api from '../services/api';
@@ -73,12 +73,13 @@ export function UserAddress(){
                                 </Text>
                             </View>
 
-                            <TextInput 
+                            <MaskedTextInput 
                                 style={styles.input}
                                 placeholder='Digite seu CEP'
-                                onChangeText={handleInputChange}
-                                keyboardType='number-pad'
-                            ></TextInput>
+                                onChangeText={(text: string, rawText: string) => handleInputChange(rawText)}
+                                mask='99999-999'
+                                keyboardType='numeric'
+                            ></MaskedTextInput>
 
                             <View style={styles.footer}>
                                 <Button 
