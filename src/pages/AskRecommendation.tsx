@@ -1,89 +1,118 @@
-import React, { useState } from 'react';
-import { TextInput, StatusBar, StyleSheet, Text, View, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { TextInput, StatusBar, StyleSheet, Text, View, Alert, Platform, TouchableOpacity } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
+import { format, isBefore } from 'date-fns';
 
 import colors from '../styles/colors';
 
 import { Button } from '../components/Button';
 
 import api from '../services/api';
+import { User } from '../types/user';
 
 export function AskRecommendation(){
     const navigation = useNavigation();
-    const [distance, setDistance] = useState(5);
+    const routes = useRoute();
+    const user = routes.params as User;
+    
     const [localsQuantity, setLocalsQuantity] = useState(1);
+    const [selectedDateTime, setSelectedDateTime] = useState(new Date());
+    const [showDatePicker, setShowDatePicker] = useState(Platform.OS === 'ios');
+    const [answers, setAnswers] = useState<object>();
+
+    useEffect(() => {
+        async function getAnswers(){
+            try {
+                const { data } = await api.get(`/answers/${user.id}`);
+                setAnswers(data);
+            } catch (error: any) {
+                Alert.alert('Não foi possível carregar seus dados, tente novamente');
+                navigation.goBack();
+            }
+        }
+        getAnswers();
+    }, []);
 
     async function handleSubmit(){
-        // const response = await api.post('/routes', {
-        //     distance,
-        //     localsQuantity
-        // });
-        const response = {
-            status: 200,
-            data: [{
-                id: 1,
-                place: {
-                    id: 2,
-                    name: 'Parque Raphael Lazzuri',
-                    address: 'Av. Kennedy, 1111 - Anchieta, São Bernardo do Campo - SP, 09726-263, Brasil',
-                    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/08/6e/2c/3a/parque-rafael-lazzuri.jpg?w=300&h=300&s=1',
-                    business_status: 'OPERATIONAL',
-                    phone: '(11) 4332-4510',
-                    category_id: 1
-                },
-                opening_hours: {
-                    id: 10,
-                    day_of_week: 'sexta-feira',
-                    open: true,
-                    start_hour: '6:00',
-                    end_hour: '22:00'
-                }
-            },
-            {
-                id: 2,
-                place: {
-                    id: 4,
-                    name: 'Golden Square Shopping',
-                    address: 'Av. Kennedy, 1111 - Anchieta, São Bernardo do Campo - SP, 09726-263, Brasil',
-                    image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/08/6e/2c/3a/parque-rafael-lazzuri.jpg?w=300&h=300&s=1',
-                    business_status: 'OPERATIONAL',
-                    phone: '(11) 4332-4510',
-                    category_id: 1
-                },
-                opening_hours: {
-                    id: 20,
-                    day_of_week: 'sexta-feira',
-                    open: true,
-                    start_hour: '6:00',
-                    end_hour: '22:00'
-                }
-            }]
+        if(localsQuantity <= 0 || localsQuantity > 10){
+            return Alert.alert('A quantidade de locais deve ser maior ou igual a 1 e menor ou igual a 10');
+        }
+        if(isBefore(selectedDateTime, Date.now())){
+            return Alert.alert('A data deve ser após ao dia de hoje');
         }
 
-        if(response.status == 200){
-            navigation.navigate('Recommendation', response.data);
+        try {
+            const newAnswers = { 
+                ...answers, 
+                placesCount: localsQuantity,
+                routeDateAndTime: `${format(selectedDateTime, 'yyyy-MM-dd')}T${format(selectedDateTime, 'HH:mm')}:00.000Z`
+            };
+            await api.put('/answers', newAnswers);
+
+            const { status, data } = await api.post('/routes', newAnswers);
+            if(status == 200){
+                navigation.navigate('Recommendation', data[0]);
+            }
+        } catch (error) {
+            Alert.alert('Erro ao tentar gerar a rota, tente novamente');
         }
-        else {
-            return Alert.alert('Erro', 'Ocorreu um erro ao tentar salvar os dados. Tente novamente');
+    }
+
+    function handleChangeTime(event: Event, dateTime: Date | undefined){
+        if(Platform.OS === 'android'){
+            setShowDatePicker(oldState => !oldState);
         }
+
+        if(dateTime){
+            setSelectedDateTime(dateTime);
+        }
+    }
+
+    function handleOpenDateTimePickerForAndroid(){
+        setShowDatePicker(oldState => !oldState);
     }
 
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <Text style={styles.title}>Até onde quero ir?</Text>
-            </View>
-
-            <View style={styles.filterContainer}>
-                <Text style={styles.filter}>Distância (km)</Text>
-
-                <TextInput style={styles.filterInput} value={distance.toString()} onChangeText={text => setDistance(+text)} />
+                <Text style={styles.title}>Detalhes da rota 😊</Text>
             </View>
 
             <View style={styles.filterContainer}>
                 <Text style={styles.filter}>Quantidade de locais</Text>
+                <TextInput 
+                    style={styles.filterInput} 
+                    value={localsQuantity.toString()} 
+                    onChangeText={text => setLocalsQuantity(+text)} 
+                />
 
-                <TextInput style={styles.filterInput} value={localsQuantity.toString()} onChangeText={text => setLocalsQuantity(+text)} />
+                <Text style={styles.filter}>Data e hora de início do passeio</Text>
+                {
+                    showDatePicker && (
+                    <DateTimePicker 
+                        value={selectedDateTime}
+                        style={styles.dateTimePickerButton}
+                        mode='datetime'
+                        display='spinner'
+                        onChange={handleChangeTime}
+                        minimumDate={new Date()}
+                        locale='pt-BR'
+                    />
+                )}
+
+                {
+                    Platform.OS === 'android' && (
+                        <TouchableOpacity 
+                            style={styles.dateTimePickerButton}
+                            onPress={handleOpenDateTimePickerForAndroid}
+                        >
+                            <Text style={styles.dateTimePickerText}>
+                                {`${format(selectedDateTime, 'dd/MM/yyyy')}`}
+                            </Text>
+                        </TouchableOpacity>
+                    )
+                }
             </View>
 
             <View style={styles.footer}>
@@ -101,11 +130,12 @@ const styles = StyleSheet.create({
         flex: 1,
         height: StatusBar.currentHeight,
         alignItems: 'center',
-        paddingHorizontal: 20
+        paddingHorizontal: 30
     },
     header: {
         alignItems: 'center',
-        paddingVertical: 40
+        paddingVertical: 40,
+        marginBottom: 10
     },
     title: {
         fontSize: 28,
@@ -116,13 +146,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     filterContainer: {
-        alignItems: 'center',
-        marginBottom: 50
+        marginBottom: 20,
+        alignItems: 'center'
     },
     filter: {
-        fontSize: 24,
+        fontSize: 22,
         color: colors.heading,
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        textAlign: 'center'
     },
     filterInput: {
         borderBottomWidth: 1,
@@ -130,8 +161,19 @@ const styles = StyleSheet.create({
         color: colors.heading,
         width: '100%',
         fontSize: 18,
-        marginTop: 20,
-        padding: 10
+        marginTop: 10,
+        marginBottom: 25,
+        padding: 10,
+        alignSelf: 'center'
+    },
+    dateTimePickerButton: {
+        width: 300,
+        paddingVertical: 12,
+        marginBottom: 10
+    },
+    dateTimePickerText: {
+        color: colors.heading,
+        fontSize: 24
     },
     footer: {
         width: '100%',

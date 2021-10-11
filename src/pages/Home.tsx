@@ -22,7 +22,7 @@ export function Home(){
                 <Button 
                     button_style={styles.button} 
                     title='Quero uma recomendação'
-                    onPress={() => navigation.navigate('AskRecommendation')}
+                    onPress={() => navigation.navigate('AskRecommendation', user)}
                 />
 
                 <Button 

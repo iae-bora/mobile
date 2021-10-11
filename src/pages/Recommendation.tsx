@@ -6,31 +6,13 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import colors from '../styles/colors';
 
 import { Button } from '../components/Button';
-
-interface TouristicSpotProps {
-    id: number;
-    place: {
-        id: number;
-        name: string;
-        image: string;
-        business_status: string;
-        address: string;
-        phone?: string;
-    }
-    opening_hours: {
-        id: number;
-        day_of_week: string;
-        open: boolean;
-        start_hour?: string;
-        end_hour?: string;
-    }
-}
+import { Route } from '../types/touristicPoint';
 
 export function Recommendation(){
     const navigation = useNavigation();
     const route = useRoute();
 
-    const params = route.params as Array<TouristicSpotProps>;
+    const params = route.params as Route;
 
     async function handleSubmit(){
         navigation.navigate('Home');
@@ -44,15 +26,16 @@ export function Recommendation(){
                 </View>
 
                 <View style={styles.content}>
-                    {params.map(touristicSpot => {
+                    {params.touristPoints.map(touristPoint => {
                         return (
-                            <View key={touristicSpot.id} style={styles.cardWrapper}>
+                            <View key={touristPoint.id} style={styles.cardWrapper}>
                                 <Card>
-                                    <Card.Cover source={{ uri: touristicSpot.place.image }} />
+                                    <Card.Cover source={{ uri: touristPoint.openingHours.place.image || '' }} />
                                     <Card.Content style={styles.cardContent}>
-                                        <Title>{touristicSpot.place.name}</Title>
-                                        <Paragraph>{touristicSpot.place.address}</Paragraph>
-                                        <Paragraph>{touristicSpot.opening_hours.start_hour} - {touristicSpot.opening_hours.end_hour}</Paragraph>
+                                        <Title>{touristPoint.openingHours.place.name}</Title>
+                                        <Paragraph>{touristPoint.openingHours.place.address}</Paragraph>
+                                        <Paragraph>{touristPoint.openingHours.place.rating}</Paragraph>
+                                        <Paragraph>{touristPoint.startHour} - {touristPoint.endHour}</Paragraph>
                                     </Card.Content>
                                 </Card>
                             </View>
