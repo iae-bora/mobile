@@ -104,7 +104,6 @@ export function AskRecommendation(){
                         display='spinner'
                         onChange={handleChangeTime}
                         minimumDate={new Date()}
-                        locale='pt-BR'
                     />
                 )}
 

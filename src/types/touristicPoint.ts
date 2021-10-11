@@ -1,5 +1,6 @@
 interface Route {
     id: number;
+    routeDate: string;
     touristPoints: Array<TouristPoint>;
 }
 
