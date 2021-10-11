@@ -1,123 +1,71 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { List, Divider } from 'react-native-paper';
-import { useRoute } from '@react-navigation/core';
+import { useRoute, useNavigation } from '@react-navigation/core';
+import { format } from 'date-fns';
 
 import colors from '../styles/colors';
 
-import { UserProps } from '../libs/storage';
+import { User } from '../types/user';
+import { Route } from '../types/touristPoint';
 import api from '../services/api';
-
-interface TouristicSpotProps {
-    id: number;
-    place: {
-        id: number;
-        name: string;
-        image: string;
-        business_status: string;
-        address: string;
-        phone?: string;
-    }
-    opening_hours: {
-        id: number;
-        day_of_week: string;
-        open: boolean;
-        start_hour?: string;
-        end_hour?: string;
-    }
-}
-
-interface TouristicRouteProps {
-    id: number;
-    places: Array<TouristicSpotProps>;
-}
 
 export function TourHistory(){
     const routes = useRoute();
-    const [touristicSpotsHistoric, setTouristicSpotsHistoric] = useState<Array<TouristicRouteProps>>();
+    const navigation = useNavigation();
+    const [touristSpotsHistoric, setTouristSpotsHistoric] = useState<Array<Route>>();
 
-    const user = routes.params as UserProps;
+    const user = routes.params as User;
 
     useEffect(() => {
-        async function retrieveTouristicSpotsHistoric(){
-            // const response = await api.get(`/routes/${user.uid}`);
-            const response = {
-                status: 200,
-                data: [{
-                    id: 1,
-                    places: [{
-                        id: 1,
-                        place: {
-                            id: 2,
-                            name: 'Parque Raphael Lazzuri',
-                            address: 'Av. Kennedy, 1111 - Anchieta, São Bernardo do Campo - SP, 09726-263, Brasil',
-                            image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/08/6e/2c/3a/parque-rafael-lazzuri.jpg?w=300&h=300&s=1',
-                            business_status: 'OPERATIONAL',
-                            phone: '(11) 4332-4510',
-                            category_id: 1
-                        },
-                        opening_hours: {
-                            id: 10,
-                            day_of_week: 'sexta-feira',
-                            open: true,
-                            start_hour: '6:00',
-                            end_hour: '22:00'
-                        }
-                    },
-                    {
-                        id: 2,
-                        place: {
-                            id: 4,
-                            name: 'Golden Square Shopping',
-                            address: 'Av. Kennedy, 1111 - Anchieta, São Bernardo do Campo - SP, 09726-263, Brasil',
-                            image: 'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/08/6e/2c/3a/parque-rafael-lazzuri.jpg?w=300&h=300&s=1',
-                            business_status: 'OPERATIONAL',
-                            phone: '(11) 4332-4510',
-                            category_id: 1
-                        },
-                        opening_hours: {
-                            id: 20,
-                            day_of_week: 'sexta-feira',
-                            open: true,
-                            start_hour: '6:00',
-                            end_hour: '22:00'
-                        }
-                    }]
-                }]
-            }
-            if(response.status == 200){
-                setTouristicSpotsHistoric(response.data);
+        async function retrieveTouristSpotsHistoric(){
+            try {
+                const { status, data } = await api.get(`/routes/all/${user.id}`);
+                if(status == 200){
+                    setTouristSpotsHistoric(data);
+                }  
+            } catch (error) {
+                Alert.alert('Não foi possível carregar seu histórico de rotas, tente novamente');
+                navigation.goBack();
             }
         }
 
-        retrieveTouristicSpotsHistoric();
+        retrieveTouristSpotsHistoric();
     }, []);
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView>
+            <ScrollView style={styles.scrollContainer}>
+                <View style={{ paddingHorizontal: 40 }}>
                 <View style={styles.header}>
                     <Text style={styles.title}>Onde já visitei? 🤔</Text>
                 </View>
 
-                <View style={styles.content}>
-                    {touristicSpotsHistoric?.map(touristicSpotRoute => {
-                        return (
-                            <View key={touristicSpotRoute.id} style={styles.listWrapper}>
-                                <List.Section>
-                                    <List.Subheader style={styles.subheader}>24/09/2021</List.Subheader>
-                                    {touristicSpotRoute.places.map(touristicSpot => {
-                                        return (
-                                            <View key={touristicSpot.id}>
-                                                <Divider style={styles.subheaderDivider} />
-                                                <List.Item style={styles.listItem} title={touristicSpot.place.name} />
-                                            </View>
-                                        )
-                                    })}
-                                </List.Section>
-                            </View>
-                        )
-                    })}
+                {
+                    touristSpotsHistoric && (
+                        <View style={styles.content}>
+                            {touristSpotsHistoric.map(touristSpotRoute => {
+                                return (
+                                    <View key={touristSpotRoute.id} style={styles.listWrapper}>
+                                        <List.Section>
+                                            <List.Subheader style={styles.subheader}>
+                                                {format(Date.parse(touristSpotRoute.routeDate), 'dd/MM/yyyy')}
+                                            </List.Subheader>
+                                            {touristSpotRoute.touristPoints.map(touristSpot => {
+                                                return (
+                                                    <View key={touristSpot.id}>
+                                                        <Divider style={styles.subheaderDivider} />
+                                                        <List.Item style={styles.listItem} title={touristSpot.openingHours.place.name} />
+                                                    </View>
+                                                )
+                                            })}
+                                        </List.Section>
+                                    </View>
+                                )
+                            })}
+                        </View>
+                    )
+                }
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -127,9 +75,12 @@ export function TourHistory(){
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        height: StatusBar.currentHeight,
-        paddingHorizontal: 20,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         alignItems: 'center'
+    },
+    scrollContainer: {
+        width: '100%',
+        paddingHorizontal: 30
     },
     header: {
         alignItems: 'center',
