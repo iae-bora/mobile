@@ -19,6 +19,7 @@ export function AskRecommendation(){
     const [localsQuantity, setLocalsQuantity] = useState(1);
     const [selectedDateTime, setSelectedDateTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(Platform.OS === 'ios');
+    const [mode, setMode] = useState('date');
     const [answers, setAnswers] = useState<object>();
 
     useEffect(() => {
@@ -69,7 +70,13 @@ export function AskRecommendation(){
         }
     }
 
-    function handleOpenDateTimePickerForAndroid(){
+    function handleOpenDatePickerForAndroid(){
+        setMode('date');
+        setShowDatePicker(oldState => !oldState);
+    }
+
+    function handleOpenTimePickerForAndroid(){
+        setMode('time');
         setShowDatePicker(oldState => !oldState);
     }
 
@@ -80,20 +87,20 @@ export function AskRecommendation(){
             </View>
 
             <View style={styles.filterContainer}>
-                <Text style={styles.filter}>Quantidade de locais</Text>
+                <Text style={styles.filterLabel}>Quantidade de locais</Text>
                 <TextInput 
                     style={styles.filterInput} 
                     value={localsQuantity.toString()} 
                     onChangeText={text => setLocalsQuantity(+text)} 
                 />
 
-                <Text style={styles.filter}>Data e hora de início do passeio</Text>
+                <Text style={styles.filterLabel}>Data e hora de início do passeio</Text>
                 {
-                    showDatePicker && (
+                    showDatePicker && mode && (
                     <DateTimePicker 
                         value={selectedDateTime}
-                        style={styles.dateTimePickerButton}
-                        mode='datetime'
+                        style={[styles.dateTimePickerButton, styles.dateTimePickerContainer, styles.dateTimePickerIOSButton]}
+                        mode={Platform.OS == 'ios' ? 'datetime' : (mode == 'date' ? 'date' : 'time')}
                         display='spinner'
                         onChange={handleChangeTime}
                         minimumDate={new Date()}
@@ -103,14 +110,35 @@ export function AskRecommendation(){
 
                 {
                     Platform.OS === 'android' && (
-                        <TouchableOpacity 
-                            style={styles.dateTimePickerButton}
-                            onPress={handleOpenDateTimePickerForAndroid}
-                        >
-                            <Text style={styles.dateTimePickerText}>
-                                {`${format(selectedDateTime, 'dd/MM/yyyy')}`}
-                            </Text>
-                        </TouchableOpacity>
+                        <View style={styles.dateTimePickerContainer}>
+                            <View style={styles.dateTimeAndroidContainer}>
+                                <Text style={styles.dateTimeText}>
+                                    Data: {' '}
+                                </Text>
+                                <TouchableOpacity 
+                                    style={[styles.dateTimePickerButton, styles.dateTimePickerAndroidButton]}
+                                    onPress={handleOpenDatePickerForAndroid}
+                                >
+                                    <Text style={[styles.dateTimeText]}>
+                                        {`${format(selectedDateTime, 'dd/MM/yyyy')}`}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+
+                            <View style={styles.dateTimeAndroidContainer}>
+                                <Text style={styles.dateTimeText}>
+                                    Horário: {' '}
+                                </Text>
+                                <TouchableOpacity 
+                                    style={[styles.dateTimePickerButton, styles.dateTimePickerAndroidButton]}
+                                    onPress={handleOpenTimePickerForAndroid}
+                                >
+                                    <Text style={styles.dateTimeText}>
+                                        {`${format(selectedDateTime, 'HH:mm')}`}
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
                     )
                 }
             </View>
@@ -130,11 +158,12 @@ const styles = StyleSheet.create({
         flex: 1,
         height: StatusBar.currentHeight,
         alignItems: 'center',
-        paddingHorizontal: 30
+        paddingHorizontal: 40,
+        justifyContent: 'center'
     },
     header: {
         alignItems: 'center',
-        paddingVertical: 40,
+        paddingVertical: Platform.OS == 'ios' ? 20 : 40,
         marginBottom: 10
     },
     title: {
@@ -146,14 +175,16 @@ const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     filterContainer: {
-        marginBottom: 20,
-        alignItems: 'center'
+        marginBottom: 10,
+        alignItems: 'center',
+        paddingVertical: Platform.OS == 'ios' ? 0 : 60
     },
-    filter: {
+    filterLabel: {
         fontSize: 22,
         color: colors.heading,
         fontWeight: 'bold',
-        textAlign: 'center'
+        textAlign: 'center',
+        marginBottom: 10
     },
     filterInput: {
         borderBottomWidth: 1,
@@ -161,19 +192,34 @@ const styles = StyleSheet.create({
         color: colors.heading,
         width: '100%',
         fontSize: 18,
-        marginTop: 10,
-        marginBottom: 25,
+        marginBottom: 40,
         padding: 10,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        textAlign: 'center'
     },
-    dateTimePickerButton: {
-        width: 300,
+    dateTimePickerContainer: {
         paddingVertical: 12,
         marginBottom: 10
     },
-    dateTimePickerText: {
+    dateTimePickerButton: {
+        borderRadius: 20
+    },
+    dateTimePickerAndroidButton: {
+        backgroundColor: colors.shape,
+        paddingHorizontal: 20
+    },
+    dateTimePickerIOSButton: {
+        width: 300
+    },
+    dateTimeAndroidContainer: {
+        flexDirection: 'row',
+        marginBottom: 10
+    },
+    dateTimeText: {
         color: colors.heading,
-        fontSize: 24
+        alignSelf: 'center',
+        fontSize: 24,
+        paddingVertical: 8,
     },
     footer: {
         width: '100%',
