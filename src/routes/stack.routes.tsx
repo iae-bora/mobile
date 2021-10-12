@@ -8,7 +8,7 @@ import { Questionnaire } from '../pages/Questionnaire';
 import { Home } from '../pages/Home';
 import { AskRecommendation } from '../pages/AskRecommendation';
 import { Recommendation } from '../pages/Recommendation';
-import { TourHistory } from '../pages/TourHistory';
+import AuthRoutes from './tab.routes';
 
 import colors from '../styles/colors';
 
@@ -61,7 +61,12 @@ const AppRoutes: React.FC = () => (
 
         <stackRoutes.Screen
             name='TourHistory'
-            component={TourHistory}
+            component={AuthRoutes}
+        />
+
+        <stackRoutes.Screen
+            name='NextTours'
+            component={AuthRoutes}
         />
     </stackRoutes.Navigator>
 )

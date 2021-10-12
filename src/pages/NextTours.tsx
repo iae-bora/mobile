@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { List, Divider } from 'react-native-paper';
 import { useRoute, useNavigation } from '@react-navigation/core';
-import { format, isBefore } from 'date-fns';
+import { format, isAfter } from 'date-fns';
 
 import colors from '../styles/colors';
 
@@ -10,7 +10,7 @@ import { User } from '../types/user';
 import { Route } from '../types/touristPoint';
 import api from '../services/api';
 
-export function TourHistory(){
+export function NextTours(){
     const routes = useRoute();
     const navigation = useNavigation();
     const [touristSpotsHistoric, setTouristSpotsHistoric] = useState<Array<Route>>();
@@ -22,13 +22,14 @@ export function TourHistory(){
             try {
                 const { status, data } = await api.get(`/routes/all/${user.id}`);
                 if(status == 200){
-                    const tourHistory = data.filter((touristSpot: Route) => {
-                        return isBefore(Date.parse(touristSpot.routeDate), Date.now())
+                    const nextTours = data.filter((touristSpot: Route) => {
+                        return isAfter(Date.parse(touristSpot.routeDate), Date.now())
                     });
-                    setTouristSpotsHistoric(tourHistory);
+                    setTouristSpotsHistoric(nextTours);
                 }  
-            } catch (error: any) {
-                Alert.alert('Erro', 'Não foi possível carregar seu histórico de rotas, tente novamente');
+            } catch (error) {
+                console.log(error);
+                Alert.alert('Não foi possível carregar seu histórico de rotas, tente novamente');
                 navigation.goBack();
             }
         }
@@ -39,9 +40,9 @@ export function TourHistory(){
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={styles.scrollContainer}>
-                <View style={{ paddingHorizontal: 40 }}>
+                <View style={{ paddingHorizontal: 30 }}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>Onde já visitei? 🤔</Text>
+                    <Text style={styles.title}>Próximos passeios 🚏</Text>
                 </View>
 
                 {

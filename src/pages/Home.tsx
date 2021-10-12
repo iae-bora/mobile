@@ -27,8 +27,8 @@ export function Home(){
 
                 <Button 
                     button_style={styles.button} 
-                    title='Histórico de rotas'
-                    onPress={() => navigation.navigate('TourHistory', user)}
+                    title='Meus passeios'
+                    onPress={() => navigation.navigate('NextTours', user)}
                 />
 
                 <Button 
