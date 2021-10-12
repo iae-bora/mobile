@@ -1,5 +1,5 @@
-import React from 'react';
-import { Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useState } from 'react';
+import { ActivityIndicator, Alert, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as Google from 'expo-google-app-auth';
 import { useNavigation } from '@react-navigation/native';
 import { 
@@ -21,8 +21,10 @@ type GoogleSignInButton = {
 
 export function GoogleSigninButton(props: GoogleSignInButton){
     const navigation = useNavigation();
+    const [loading, setLoading] = useState(false);
 
     async function authenticate() {
+        setLoading(true);
         const result = await Google.logInAsync({
             iosClientId: IOS_CLIENT_ID,
             androidClientId: ANDROID_CLIENT_ID,
@@ -33,12 +35,10 @@ export function GoogleSigninButton(props: GoogleSignInButton){
           
         if (result.type === 'success') {
             const { photoUrl, name, id } = result.user;
-            console.log(id);
 
             try {
                 const { data, status } = await api.get(`/users/${id}`);
                 if(status == 200){
-                    console.log(data);
                     try {
                         const answers = await api.get(`/answers/${id}`);
                         if(answers.status == 200){
@@ -64,19 +64,23 @@ export function GoogleSigninButton(props: GoogleSignInButton){
                             };
 
                             await saveUserData(user);
+                            setLoading(false);
                             return navigation.navigate('Questionnaire', {...user, status: 'create'});
                         }
                         else{
+                            setLoading(false);
                             return Alert.alert('Erro ao tentar relizar a autenticação, tente novamente');
                         }
                     }
                 }
                 else{
+                    setLoading(false);
                     return Alert.alert('Erro ao obter os dados. Tente novamente');
                 }
             } catch (error: any) {
                 if(error.response.status == 400){
                     const registrationStep = props.registrationStep;
+                    setLoading(false);
                     return navigation.navigate(props.navigationRoute, { photoUrl, name, id, registrationStep });
                 }
             }
@@ -84,17 +88,22 @@ export function GoogleSigninButton(props: GoogleSignInButton){
     }
 
     return (
-        <TouchableOpacity
-                style={styles.button}
-                onPress={authenticate}
-            >
-            <View style={styles.imageContainer}>
-                <Image style={styles.googleImage} source={googleIconImg} />
-            </View>
-            <Text style={styles.buttonText}>
-                Login com Google
-            </Text>
-        </TouchableOpacity>
+        loading ? (
+            <ActivityIndicator size='large' color={colors.background_blue} />
+        ) :
+        (
+            <TouchableOpacity
+                    style={styles.button}
+                    onPress={authenticate}
+                >
+                <View style={styles.imageContainer}>
+                    <Image style={styles.googleImage} source={googleIconImg} />
+                </View>
+                <Text style={styles.buttonText}>
+                    Login com Google
+                </Text>
+            </TouchableOpacity>
+        )
     )
 }
 

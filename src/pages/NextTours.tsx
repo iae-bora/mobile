@@ -9,10 +9,12 @@ import colors from '../styles/colors';
 import { User } from '../types/user';
 import { Route } from '../types/touristPoint';
 import api from '../services/api';
+import { Load } from '../components/Load';
 
 export function NextTours(){
     const routes = useRoute();
     const navigation = useNavigation();
+    const [loading, setLoading] = useState(false);
     const [touristSpotsHistoric, setTouristSpotsHistoric] = useState<Array<Route>>();
 
     const user = routes.params as User;
@@ -27,15 +29,18 @@ export function NextTours(){
                     });
                     setTouristSpotsHistoric(nextTours);
                 }  
+                setLoading(false);
             } catch (error) {
-                console.log(error);
+                setLoading(false);
                 Alert.alert('Não foi possível carregar seu histórico de rotas, tente novamente');
                 navigation.goBack();
             }
         }
-
+        setLoading(true);
         retrieveTouristSpotsHistoric();
     }, []);
+
+    if(loading) return <Load/>
 
     return (
         <SafeAreaView style={styles.container}>

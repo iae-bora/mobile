@@ -7,6 +7,7 @@ import { format, isBefore } from 'date-fns';
 import colors from '../styles/colors';
 
 import { Button } from '../components/Button';
+import { Load } from '../components/Load';
 
 import api from '../services/api';
 import { User } from '../types/user';
@@ -16,6 +17,7 @@ export function AskRecommendation(){
     const routes = useRoute();
     const user = routes.params as User;
     
+    const [loading, setLoading] = useState(false);
     const [localsQuantity, setLocalsQuantity] = useState(1);
     const [selectedDateTime, setSelectedDateTime] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(Platform.OS === 'ios');
@@ -27,11 +29,14 @@ export function AskRecommendation(){
             try {
                 const { data } = await api.get(`/answers/${user.id}`);
                 setAnswers(data);
+                setLoading(false);
             } catch (error: any) {
+                setLoading(false);
                 Alert.alert('Não foi possível carregar seus dados, tente novamente');
                 navigation.goBack();
             }
         }
+        setLoading(true);
         getAnswers();
     }, []);
 
@@ -49,13 +54,16 @@ export function AskRecommendation(){
                 placesCount: localsQuantity,
                 routeDateAndTime: `${format(selectedDateTime, 'yyyy-MM-dd')}T${format(selectedDateTime, 'HH:mm')}:00.000Z`
             };
+            setLoading(true);
             await api.put('/answers', newAnswers);
 
             const { status, data } = await api.post('/routes', newAnswers);
+            setLoading(false);
             if(status == 200){
                 navigation.navigate('Recommendation', data[0]);
             }
         } catch (error) {
+            setLoading(false);
             Alert.alert('Erro ao tentar gerar a rota, tente novamente');
         }
     }
@@ -79,6 +87,8 @@ export function AskRecommendation(){
         setMode('time');
         setShowDatePicker(oldState => !oldState);
     }
+
+    if(loading) return <Load/>
 
     return (
         <View style={styles.container}>

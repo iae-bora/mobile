@@ -16,6 +16,7 @@ import { MaskedTextInput } from 'react-native-mask-text';
 import { UserProps, saveUserData } from '../libs/storage';
 import api from '../services/api';
 import { Button } from '../components/Button';
+import { Load } from '../components/Load';
 
 import colors from '../styles/colors';
 
@@ -23,6 +24,7 @@ export function UserAddress(){
     const navigation = useNavigation();
     const routes = useRoute();
     const [address, setAddress] = useState<string>();
+    const [loading, setLoading] = useState(false);
 
     const userData = routes.params as UserProps;
 
@@ -31,6 +33,7 @@ export function UserAddress(){
             if(!address){
                 return Alert.alert('Digite seu CEP!');
             }
+            setLoading(true);
             const response = await api.post('/users', {
                 googleId: userData.id,
                 address
@@ -39,12 +42,15 @@ export function UserAddress(){
             if(response.status == 200){
                 const newUserData = {...userData, address, registrationStep: 'questionnaire'};
                 await saveUserData(newUserData);
+                setLoading(false);
                 navigation.navigate('Questionnaire', {...newUserData, status: 'create'});
             }
             else {
+                setLoading(false);
                 return Alert.alert('Erro', 'Ocorreu um erro ao tentar salvar os dados. Tente novamente');
             }
         } catch (error) {
+            setLoading(false);
             Alert.alert('Erro', 'Ocorreu um erro ao tentar salvar os dados. Tente novamente');
         }
     }
@@ -52,6 +58,8 @@ export function UserAddress(){
     function handleInputChange(value: string){
         setAddress(value);
     }
+
+    if(loading) return <Load/>
 
     return (
         <SafeAreaView style={styles.container}>

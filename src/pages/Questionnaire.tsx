@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
+import { TextInput } from 'react-native-gesture-handler';
 import { useNavigation, useRoute } from '@react-navigation/native';
 
 import colors from '../styles/colors';
@@ -8,7 +9,7 @@ import { UserProps, saveUserData } from '../libs/storage';
 import api from '../services/api';
 import { Question } from '../components/Question';
 import { Button } from '../components/Button';
-import { TextInput } from 'react-native-gesture-handler';
+import { Load } from '../components/Load';
 
 type RouteParams = UserProps & {
     status: string;
@@ -27,6 +28,7 @@ export function Questionnaire(){
     const answersQuestionSix = ["Cristianismo","Hinduísmo","Budismo","Judaísmo","Espiritismo","Nenhuma"]
     const answersQuestionSeven = ["Não","Sim"]
 
+    const [loading, setLoading] = useState(false);
     const [id, setId] = useState();
     const [answerOne, setAnswerOne] = useState<number>();
     const [answerTwo, setAnswerTwo] = useState<number>();
@@ -55,17 +57,22 @@ export function Questionnaire(){
                     setAge(answers['userAge']);
                     setPlacesCount(answers['placesCount']);
                     setId(answers['id']);
+
+                    setLoading(false);
                 }
                 else{
+                    setLoading(false);
                     Alert.alert('Erro', 'Não foi possível carregar suas respostas. Tente novamente');
                     navigation.goBack();
                 }
             } catch (error: any) {
+                setLoading(false);
                 return;
             }
         }
 
         if(user.status == 'update'){
+            setLoading(true);
             retrieveAnswers();
         }
     }, []);
@@ -100,6 +107,7 @@ export function Questionnaire(){
         };
 
         try {
+            setLoading(true);
             let response;
             if(user.status == 'create'){
                 response = await api.post('/answers', requestData);
@@ -112,13 +120,16 @@ export function Questionnaire(){
             if(response.status == 200){
                 const newUserData = {...user, registrationStep: 'completed'};
                 await saveUserData(newUserData);
+                setLoading(false);
                 navigation.navigate('Home', newUserData);
             }            
         } catch (error: any) {
-            console.log(error.response);
+            setLoading(false);
             Alert.alert('Ocorreu um erro ao tentar salvar suas respostas, tente novamente');
         }
     }
+
+    if(loading) return <Load/>
 
     return (
         <SafeAreaView style={styles.container}>
