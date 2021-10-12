@@ -42,7 +42,7 @@ export function NextTours(){
             <ScrollView style={styles.scrollContainer}>
                 <View style={{ paddingHorizontal: 30 }}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>Próximos passeios 🚏</Text>
+                    <Text style={styles.title}>Próximos passeios</Text>
                 </View>
 
                 {

@@ -28,7 +28,7 @@ const AuthRoutes = () => {
                 },
                 tabBarStyle: {
                     paddingVertical: Platform.OS === 'ios' ? 20 : 0,
-                    height: 88,
+                    height: 80,
                 }
             }}   
         >
@@ -39,7 +39,7 @@ const AuthRoutes = () => {
                 options={{
                     tabBarIcon: (({ size, color }) => (
                         <MaterialIcons 
-                            name='add-circle-outline'
+                            name='navigation'
                             size={size}
                             color={color}
                         />
@@ -54,7 +54,7 @@ const AuthRoutes = () => {
                 options={{
                     tabBarIcon: (({ size, color }) => (
                         <MaterialIcons 
-                            name='format-list-bulleted'
+                            name='check'
                             size={size}
                             color={color}
                         />

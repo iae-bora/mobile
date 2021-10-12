@@ -5,6 +5,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
 
 import colors from '../styles/colors';
+import logo from '../assets/logo.png';
 
 import { Button } from '../components/Button';
 import { Route } from '../types/touristPoint';
@@ -42,7 +43,11 @@ export function Recommendation(){
                         return (
                             <View key={touristPoint.id} style={styles.cardWrapper}>
                                 <Card>
-                                    <Card.Cover source={{ uri: touristPoint.openingHours.place.image || '' }} />
+                                    <Card.Cover 
+                                        source={
+                                            touristPoint.openingHours.place.image ? ({ uri: touristPoint.openingHours.place.image }) : (logo)
+                                        } 
+                                    />
                                     <Card.Content style={styles.cardContent}>
                                         <Title style={styles.cardTitle}>{touristPoint.openingHours.place.name}</Title>
                                         <Paragraph>
