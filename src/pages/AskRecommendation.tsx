@@ -165,7 +165,7 @@ export function AskRecommendation(){
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        height: StatusBar.currentHeight,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
         alignItems: 'center',
         paddingHorizontal: 40,
         justifyContent: 'center'
