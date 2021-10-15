@@ -3,6 +3,7 @@ import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text,
 import { List, Divider } from 'react-native-paper';
 import { useRoute, useNavigation } from '@react-navigation/core';
 import { format, isBefore } from 'date-fns';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import colors from '../styles/colors';
 
@@ -10,6 +11,7 @@ import { User } from '../types/user';
 import { Route } from '../types/touristPoint';
 import api from '../services/api';
 import { Load } from '../components/Load';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export function TourHistory(){
     const routes = useRoute();
@@ -24,10 +26,11 @@ export function TourHistory(){
             try {
                 const { status, data } = await api.get(`/routes/all/${user.id}`);
                 if(status == 200){
-                    const tourHistory = data.filter((touristSpot: Route) => {
-                        return isBefore(Date.parse(touristSpot.routeDate), Date.now())
-                    });
-                    setTouristSpotsHistoric(tourHistory);
+                    // const tourHistory = data.filter((touristSpot: Route) => {
+                    //     return isBefore(Date.parse(touristSpot.routeDate), Date.now())
+                    // });
+                    // setTouristSpotsHistoric(tourHistory);
+                    setTouristSpotsHistoric(data);
                 } 
                 setLoading(false);
             } catch (error: any) {
@@ -48,6 +51,7 @@ export function TourHistory(){
                 <View style={{ paddingHorizontal: 40 }}>
                 <View style={styles.header}>
                     <Text style={styles.title}>Onde já visitei? 🤔</Text>
+                    <Text style={styles.subtitle}>Clique em um dos cards para avaliar a recomendação</Text>
                 </View>
 
                 {
@@ -55,21 +59,48 @@ export function TourHistory(){
                         <View style={styles.content}>
                             {touristSpotsHistoric.map(touristSpotRoute => {
                                 return (
-                                    <View key={touristSpotRoute.id} style={styles.listWrapper}>
-                                        <List.Section>
-                                            <List.Subheader style={styles.subheader}>
-                                                {format(Date.parse(touristSpotRoute.routeDate), 'dd/MM/yyyy')}
-                                            </List.Subheader>
-                                            {touristSpotRoute.touristPoints.map(touristSpot => {
-                                                return (
-                                                    <View key={touristSpot.id}>
-                                                        <Divider style={styles.subheaderDivider} />
-                                                        <List.Item style={styles.listItem} title={touristSpot.openingHours.place.name} />
+                                    <TouchableOpacity
+                                        key={touristSpotRoute.id}
+                                        onPress={() => navigation.navigate('Recommendation', {
+                                            createdRoute: touristSpotRoute,
+                                            creating: false
+                                        })}
+                                    >
+                                        <View style={styles.listWrapper}>
+                                            <List.Section>
+                                                <List.Subheader style={styles.subheader}>
+                                                    {format(Date.parse(touristSpotRoute.routeDate), 'dd/MM/yyyy')}
+                                                    <View>
+                                                        <MaterialIcons 
+                                                            name='arrow-right'
+                                                            size={25}
+                                                            color={colors.heading}
+                                                            onPress={() => navigation.navigate('Recommendation', {
+                                                                createdRoute: touristSpotRoute,
+                                                                creating: false
+                                                            })}
+                                                        />
                                                     </View>
-                                                )
-                                            })}
-                                        </List.Section>
-                                    </View>
+                                                    {/* <View>
+                                                        {format(Date.parse(touristSpotRoute.routeDate), 'dd/MM/yyyy')}
+                                                        <MaterialIcons 
+                                                            name='arrow-right'
+                                                            size={10}
+                                                            color={colors.heading}
+                                                        />
+                                                    </View> */}
+                                                </List.Subheader>
+                                                {touristSpotRoute.touristPoints.map(touristSpot => {
+                                                    return (
+                                                        <View key={touristSpot.id}>
+                                                            <Divider style={styles.subheaderDivider} />
+                                                            <List.Item style={styles.listItem} title={touristSpot.openingHours.place.name} />
+                                                        </View>
+                                                    )
+                                                })}
+                                            </List.Section>
+                                        </View>
+                                    </TouchableOpacity>
                                 )
                             })}
                         </View>
@@ -103,6 +134,13 @@ const styles = StyleSheet.create({
         lineHeight: 34,
         color: colors.heading,
         fontWeight: 'bold'
+    },
+    subtitle: {
+        textAlign: 'center',
+        fontSize: 17,
+        paddingVertical: 20,
+        marginTop: 10,
+        color: colors.heading
     },
     content: {
         marginBottom: 20

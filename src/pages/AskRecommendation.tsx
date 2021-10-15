@@ -60,7 +60,10 @@ export function AskRecommendation(){
             const { status, data } = await api.post('/routes', newAnswers);
             setLoading(false);
             if(status == 200){
-                navigation.navigate('Recommendation', data[0]);
+                navigation.navigate('Recommendation', {
+                    createdRoute: data[0],
+                    creating: true
+                });
             }
         } catch (error) {
             setLoading(false);

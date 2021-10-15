@@ -25,10 +25,16 @@ export function Home(){
                     onPress={() => navigation.navigate('AskRecommendation', user)}
                 />
 
-                <Button 
+                {/* <Button 
                     button_style={styles.button} 
                     title='Meus passeios'
                     onPress={() => navigation.navigate('NextTours', user)}
+                /> */}
+
+                <Button 
+                    button_style={styles.button} 
+                    title='Meus passeios'
+                    onPress={() => navigation.navigate('TourHistory', user)}
                 />
 
                 <Button 
