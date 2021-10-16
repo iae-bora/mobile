@@ -13,7 +13,7 @@ export function Header(props: HeaderProps){
             <View>
                 <Text style={styles.greeting}>Olá,</Text>
                 <Text style={styles.userName}>
-                    {props.username}
+                    {props.username.split(' ')[0]}!
                 </Text>
             </View>
         </View>
@@ -27,7 +27,8 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         paddingVertical: 20,
-        marginTop: StatusBar.currentHeight
+        marginTop: StatusBar.currentHeight,
+        paddingHorizontal: 10
     },
     greeting: {
         fontSize: 32,
