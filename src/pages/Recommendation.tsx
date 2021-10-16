@@ -71,7 +71,7 @@ export function Recommendation(){
     }
 
     function openFormsWebPage(){
-        const url = 'https://reactnative.dev/docs/alert';
+        const url = 'https://forms.gle/771NaYDCgVpcKDCR9';
         Linking.canOpenURL(url).then(supported => {
             if(supported){
                 Linking.openURL(url);
@@ -85,7 +85,12 @@ export function Recommendation(){
     const [showAlertMsg, setShowAlertMsg] = useState(false);
 
     const showAlert = () => {
-        setShowAlertMsg(true);
+        if(feedback){
+            openFormsWebPage();
+        }
+        else{
+            setShowAlertMsg(true);
+        }
     };
 
     const setByTimezone = (datetime: string) => {
@@ -107,7 +112,10 @@ export function Recommendation(){
                     show={showAlertMsg}
                     showProgress={false}
                     title="Avaliação"
-                    message="Escolha qual tipo de avaliação você gostaria de fazer!"
+                    message={
+                        `Qual tipo de avaliação você gostaria de fazer?
+                        ${'\n'} No momento estamos priorizando as avaliações realizadas pelo Forms!`
+                    }
                     closeOnTouchOutside={true}
                     closeOnHardwareBackPress={true}
                     showCancelButton={true}
@@ -193,22 +201,21 @@ export function Recommendation(){
                         </View>
                     ) : (
                         <View style={styles.footer}>
-                            {feedback ? (
-                                <View style={{ marginBottom: 30 }}>
+                            {feedback && (
+                                <View style={{ marginBottom: 40 }}>
+                                    <Text style={[styles.feedbackText, { marginBottom: 10 }]}>Sua avaliação</Text>
                                     <Rating
                                         startingValue={feedback.rating}
                                         readonly
                                     />
                                 </View>
-                            ) : (
-                                <View style={{ marginBottom: 20 }}>
-                                    <Button 
-                                        title='Avaliar'
-                                        onPress={showAlert}
-                                    />
-                                </View>
-                                
                             )}
+                            <View style={{ marginBottom: 20 }}>
+                                <Button 
+                                    title={feedback ? "Avaliar pelo Forms" : 'Avaliar'}
+                                    onPress={showAlert}
+                                />
+                            </View>
 
                             <View>
                                 <Button 
