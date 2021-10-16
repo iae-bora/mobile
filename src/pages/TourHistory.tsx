@@ -30,7 +30,10 @@ export function TourHistory(){
                     //     return isBefore(Date.parse(touristSpot.routeDate), Date.now())
                     // });
                     // setTouristSpotsHistoric(tourHistory);
-                    setTouristSpotsHistoric(data);
+                    const tourHistory = data.filter((route: Route) => {
+                        return route.touristPoints.length > 0
+                    });
+                    setTouristSpotsHistoric(tourHistory);
                 } 
                 setLoading(false);
             } catch (error: any) {
@@ -68,28 +71,18 @@ export function TourHistory(){
                                     >
                                         <View style={styles.listWrapper}>
                                             <List.Section>
-                                                <List.Subheader style={styles.subheader}>
-                                                    {format(Date.parse(touristSpotRoute.routeDate), 'dd/MM/yyyy')}
-                                                    <View>
-                                                        <MaterialIcons 
-                                                            name='arrow-right'
-                                                            size={25}
-                                                            color={colors.heading}
-                                                            onPress={() => navigation.navigate('Recommendation', {
-                                                                createdRoute: touristSpotRoute,
-                                                                creating: false
-                                                            })}
-                                                        />
-                                                    </View>
-                                                    {/* <View>
+                                                <View style={styles.subheaderContainer}>
+                                                    <List.Subheader style={styles.subheader}>
                                                         {format(Date.parse(touristSpotRoute.routeDate), 'dd/MM/yyyy')}
+                                                    </List.Subheader>
+                                                    <List.Subheader style={styles.subheader}>
                                                         <MaterialIcons 
-                                                            name='arrow-right'
-                                                            size={10}
-                                                            color={colors.heading}
-                                                        />
-                                                    </View> */}
-                                                </List.Subheader>
+                                                                name='keyboard-arrow-right'
+                                                                size={30}
+                                                                color={colors.heading}
+                                                            />
+                                                    </List.Subheader>
+                                                </View>
                                                 {touristSpotRoute.touristPoints.map(touristSpot => {
                                                     return (
                                                         <View key={touristSpot.id}>
@@ -149,18 +142,25 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         borderColor: colors.gray,
         borderRadius: 8,
-        borderWidth: 1
+        borderWidth: 1,
+        paddingBottom: 0
+    },
+    subheaderContainer: { 
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        paddingRight: 0,
+        paddingVertical: 10
     },
     subheader: {
         color: colors.heading,
         fontWeight: 'bold',
-        textAlign: 'center',
         fontSize: 20,
         paddingTop: 0
     },
     subheaderDivider: {
-        color: colors.gray,
-        height: 4
+        backgroundColor: colors.gray,
+        height: 2
     },
     listItem: {
         paddingVertical: 10
