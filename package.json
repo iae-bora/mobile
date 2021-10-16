@@ -24,10 +24,13 @@
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-native": "https://github.com/expo/react-native/archive/sdk-42.0.0.tar.gz",
+    "react-native-awesome-alerts": "^1.5.2",
+    "react-native-bouncy-checkbox": "^2.1.7",
     "react-native-dotenv": "^3.2.0",
     "react-native-gesture-handler": "~1.10.2",
     "react-native-mask-text": "^0.4.0",
     "react-native-paper": "^4.9.2",
+    "react-native-ratings": "^8.1.0",
     "react-native-screens": "~3.0.0",
     "react-native-vector-icons": "^8.1.0",
     "react-native-web": "~0.13.12"

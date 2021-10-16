@@ -3,6 +3,7 @@ import { Alert, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text,
 import { List, Divider } from 'react-native-paper';
 import { useRoute, useNavigation } from '@react-navigation/core';
 import { format, isBefore } from 'date-fns';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import colors from '../styles/colors';
 
@@ -10,6 +11,7 @@ import { User } from '../types/user';
 import { Route } from '../types/touristPoint';
 import api from '../services/api';
 import { Load } from '../components/Load';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export function TourHistory(){
     const routes = useRoute();
@@ -24,8 +26,12 @@ export function TourHistory(){
             try {
                 const { status, data } = await api.get(`/routes/all/${user.id}`);
                 if(status == 200){
-                    const tourHistory = data.filter((touristSpot: Route) => {
-                        return isBefore(Date.parse(touristSpot.routeDate), Date.now())
+                    // const tourHistory = data.filter((touristSpot: Route) => {
+                    //     return isBefore(Date.parse(touristSpot.routeDate), Date.now())
+                    // });
+                    // setTouristSpotsHistoric(tourHistory);
+                    const tourHistory = data.filter((route: Route) => {
+                        return route.touristPoints.length > 0
                     });
                     setTouristSpotsHistoric(tourHistory);
                 } 
@@ -48,6 +54,7 @@ export function TourHistory(){
                 <View style={{ paddingHorizontal: 40 }}>
                 <View style={styles.header}>
                     <Text style={styles.title}>Onde já visitei? 🤔</Text>
+                    <Text style={styles.subtitle}>Clique em um dos cards para avaliar a recomendação</Text>
                 </View>
 
                 {
@@ -55,21 +62,38 @@ export function TourHistory(){
                         <View style={styles.content}>
                             {touristSpotsHistoric.map(touristSpotRoute => {
                                 return (
-                                    <View key={touristSpotRoute.id} style={styles.listWrapper}>
-                                        <List.Section>
-                                            <List.Subheader style={styles.subheader}>
-                                                {format(Date.parse(touristSpotRoute.routeDate), 'dd/MM/yyyy')}
-                                            </List.Subheader>
-                                            {touristSpotRoute.touristPoints.map(touristSpot => {
-                                                return (
-                                                    <View key={touristSpot.id}>
-                                                        <Divider style={styles.subheaderDivider} />
-                                                        <List.Item style={styles.listItem} title={touristSpot.openingHours.place.name} />
-                                                    </View>
-                                                )
-                                            })}
-                                        </List.Section>
-                                    </View>
+                                    <TouchableOpacity
+                                        key={touristSpotRoute.id}
+                                        onPress={() => navigation.navigate('Recommendation', {
+                                            createdRoute: touristSpotRoute,
+                                            creating: false
+                                        })}
+                                    >
+                                        <View style={styles.listWrapper}>
+                                            <List.Section>
+                                                <View style={styles.subheaderContainer}>
+                                                    <List.Subheader style={styles.subheader}>
+                                                        {format(Date.parse(touristSpotRoute.routeDate), 'dd/MM/yyyy')}
+                                                    </List.Subheader>
+                                                    <List.Subheader style={styles.subheader}>
+                                                        <MaterialIcons 
+                                                                name='keyboard-arrow-right'
+                                                                size={30}
+                                                                color={colors.heading}
+                                                            />
+                                                    </List.Subheader>
+                                                </View>
+                                                {touristSpotRoute.touristPoints.map(touristSpot => {
+                                                    return (
+                                                        <View key={touristSpot.id}>
+                                                            <Divider style={styles.subheaderDivider} />
+                                                            <List.Item style={styles.listItem} title={touristSpot.openingHours.place.name} />
+                                                        </View>
+                                                    )
+                                                })}
+                                            </List.Section>
+                                        </View>
+                                    </TouchableOpacity>
                                 )
                             })}
                         </View>
@@ -104,6 +128,13 @@ const styles = StyleSheet.create({
         color: colors.heading,
         fontWeight: 'bold'
     },
+    subtitle: {
+        textAlign: 'center',
+        fontSize: 17,
+        paddingVertical: 20,
+        marginTop: 10,
+        color: colors.heading
+    },
     content: {
         marginBottom: 20
     },
@@ -111,18 +142,25 @@ const styles = StyleSheet.create({
         marginVertical: 20,
         borderColor: colors.gray,
         borderRadius: 8,
-        borderWidth: 1
+        borderWidth: 1,
+        paddingBottom: 0
+    },
+    subheaderContainer: { 
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        paddingRight: 0,
+        paddingVertical: 10
     },
     subheader: {
         color: colors.heading,
         fontWeight: 'bold',
-        textAlign: 'center',
         fontSize: 20,
         paddingTop: 0
     },
     subheaderDivider: {
-        color: colors.gray,
-        height: 4
+        backgroundColor: colors.gray,
+        height: 2
     },
     listItem: {
         paddingVertical: 10
