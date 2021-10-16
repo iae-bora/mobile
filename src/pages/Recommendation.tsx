@@ -4,6 +4,7 @@ import { Card, Title, Paragraph } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
 import { Rating } from 'react-native-ratings';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 import colors from '../styles/colors';
 import logo from '../assets/logo.png';
@@ -26,6 +27,9 @@ interface Feedback {
     rating: number;
     text?: string;
     userRouteId: number;
+    route: {
+        id: number;
+    }
 }
 
 export function Recommendation(){
@@ -33,7 +37,7 @@ export function Recommendation(){
     const route = useRoute();
     const [loading, setLoading] = useState(false);
     const [user, setUser] = useState<User>();
-    const [feedback, setFeedback] = useState<Feedback>();
+    const [feedback, setFeedback] = useState<Feedback | undefined>(undefined);
 
     const categories = ['Parque', 'Museu', 'Cinema', 'Shopping', 'Bar', 'Restaurante', 'Show', 'Biblioteca', 'Estádio', 'Jogos', 'Teatro'];
     const { createdRoute, creating } = route.params as Recommendation;
@@ -45,10 +49,10 @@ export function Recommendation(){
                 setUser(userData);
 
                 const { status, data } = await api.get(`/feedback/${userData.id}`);
-                if(status == 200){
+                if(status == 200 && data.length > 0){
                     const routeFeedback = data.filter((userFeedback: Feedback) => {
-                        return userFeedback.userRouteId = createdRoute.id
-                    })
+                        return userFeedback.route.id == createdRoute.id
+                    })[0];
                     setFeedback(routeFeedback);
                 }
             } catch (error: any) {
@@ -67,7 +71,7 @@ export function Recommendation(){
     }
 
     function openFormsWebPage(){
-        const url = 'https://reactnative.dev/docs/alert'
+        const url = 'https://reactnative.dev/docs/alert';
         Linking.canOpenURL(url).then(supported => {
             if(supported){
                 Linking.openURL(url);
@@ -77,6 +81,12 @@ export function Recommendation(){
             }
         })
     }
+
+    const [showAlertMsg, setShowAlertMsg] = useState(false);
+
+    const showAlert = () => {
+        setShowAlertMsg(true);
+    };
 
     const setByTimezone = (datetime: string) => {
         const date: Date = new Date(datetime);
@@ -92,6 +102,33 @@ export function Recommendation(){
                 <View style={styles.header}>
                     <Text style={styles.title}>Sua recomendação 🛣</Text>
                 </View>
+
+                <AwesomeAlert
+                    show={showAlertMsg}
+                    showProgress={false}
+                    title="Avaliação"
+                    message="Escolha qual tipo de avaliação você gostaria de fazer!"
+                    closeOnTouchOutside={true}
+                    closeOnHardwareBackPress={true}
+                    showCancelButton={true}
+                    showConfirmButton={true}
+                    cancelText="  Aplicativo  "
+                    confirmText="       Forms       "
+                    confirmButtonColor={colors.background_blue}
+                    onCancelPressed={() => {
+                        navigation.navigate('Feedback', { userRouteId: createdRoute.id });
+                        setShowAlertMsg(false);
+                    }}
+                    onConfirmPressed={() => {
+                        openFormsWebPage();
+                        setShowAlertMsg(false);
+                    }}
+                    onDismiss={() => {
+                        setShowAlertMsg(false);
+                    }}
+                    titleStyle={styles.alertTitleStyle}
+                    messageStyle={styles.alertMessageStyle}
+                />
 
                 <View style={styles.dateContainer}>
                     <Text style={styles.date}>Data: {format(Date.parse(createdRoute.routeDate), 'dd/MM/yyyy')}</Text>
@@ -135,6 +172,9 @@ export function Recommendation(){
                 {
                     creating ? (
                         <View style={styles.footer}>
+                            <Text style={styles.feedbackText}>
+                                O que achou da recomendação? Avalie clicando no botão abaixo, sua opinião é muito importante para nós!
+                            </Text>
                             <View style={{ marginBottom: 20 }}>
                                 <Button 
                                     title='Avaliar'
@@ -144,15 +184,17 @@ export function Recommendation(){
 
                             <View>
                                 <Button 
-                                    title='Bora lá!'
+                                    title='Voltar'
                                     onPress={handleSubmit}
+                                    button_style={styles.backButton}
+                                    text_style={styles.backButtonText}
                                 />
                             </View>
                         </View>
                     ) : (
                         <View style={styles.footer}>
                             {feedback ? (
-                                <View style={{ marginBottom: 20 }}>
+                                <View style={{ marginBottom: 30 }}>
                                     <Rating
                                         startingValue={feedback.rating}
                                         readonly
@@ -162,7 +204,7 @@ export function Recommendation(){
                                 <View style={{ marginBottom: 20 }}>
                                     <Button 
                                         title='Avaliar'
-                                        onPress={() => navigation.navigate('Feedback', user)}
+                                        onPress={showAlert}
                                     />
                                 </View>
                                 
@@ -231,6 +273,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 50
     },
+    feedbackText: {
+        paddingHorizontal: 20,
+        fontSize: 20,
+        textAlign: 'center',
+        marginBottom: 30,
+        lineHeight: 34,
+        color: colors.heading,
+        fontWeight: 'bold'
+    },
     backButton: {
         backgroundColor: colors.white,
         borderColor: colors.background_blue,
@@ -239,5 +290,14 @@ const styles = StyleSheet.create({
     },
     backButtonText: {
         color: colors.background_blue
+    },
+    alertTitleStyle: {
+        color: colors.heading,
+        fontWeight: 'bold',
+        fontSize: 20
+    },
+    alertMessageStyle: {
+        textAlign: 'center',
+        fontSize: 15
     }
 })
