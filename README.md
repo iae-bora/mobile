@@ -21,6 +21,7 @@ This is the mobile app version of IAe, Bora? project and it was developed with R
 ## ⚒️ Technologies
 - [React Native](https://reactnative.dev/)
 - [Expo](https://expo.dev/)
+- [Typescript](https://www.typescriptlang.org/)
 - [React Navigation](https://reactnavigation.org/)
 - [React Native Paper](https://callstack.github.io/react-native-paper/)
 - [Expo Google Auth](https://docs.expo.dev/versions/latest/sdk/google/)
