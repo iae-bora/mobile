@@ -45,4 +45,4 @@ ANDROID_STANDALONE_APP_CLIENT_ID=
 - Install the dependencies with `yarn`
 - Start the server with `yarn start`
 
-It witll a page in your web browser and then you can run in as you like (using an Expo app, Android emulator, IOS emulator...).
+It will open a web page in **http://localhost:19002** and then you can run it as you like (using the Expo app, Android emulator, IOS emulator...).
