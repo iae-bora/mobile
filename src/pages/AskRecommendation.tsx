@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TextInput, StatusBar, StyleSheet, Text, View, Alert, Platform, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
+import { TextInput, StatusBar, StyleSheet, Text, View, Alert, Platform, TouchableOpacity, ScrollView, SafeAreaView, Keyboard } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import DateTimePicker, { Event } from '@react-native-community/datetimepicker';
 import BouncyCheckbox from "react-native-bouncy-checkbox";
@@ -44,10 +44,10 @@ export function AskRecommendation(){
 
     async function handleSubmit(){
         if(localsQuantity <= 0 || localsQuantity > 10){
-            return Alert.alert('A quantidade de locais deve ser maior ou igual a 1 e menor ou igual a 10');
+            return Alert.alert('Erro', 'A quantidade de locais deve ser maior ou igual a 1 e menor ou igual a 10');
         }
         if(isBefore(selectedDateTime, Date.now())){
-            return Alert.alert('A data deve ser após ao dia de hoje');
+            return Alert.alert('Erro', 'A data e hora precisa maior que o momento atual');
         }
 
         try {
@@ -70,7 +70,7 @@ export function AskRecommendation(){
             }
         } catch (error) {
             setLoading(false);
-            Alert.alert('Erro ao tentar gerar a rota, tente novamente');
+            Alert.alert('Erro', 'Erro ao tentar gerar a rota, tente novamente');
         }
     }
 
@@ -98,7 +98,7 @@ export function AskRecommendation(){
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView style={styles.scrollContainer}>
+            <ScrollView style={styles.scrollContainer} keyboardShouldPersistTaps='handled'>
                 <View style={styles.header}>
                     <Text style={styles.title}>Detalhes da rota 😊</Text>
                 </View>
@@ -108,7 +108,7 @@ export function AskRecommendation(){
                     <TextInput 
                         style={styles.filterInput} 
                         value={localsQuantity.toString()} 
-                        onChangeText={text => setLocalsQuantity(+text)} 
+                        onChangeText={text => setLocalsQuantity(+text)}
                     />
 
                     <View style={styles.checkboxContainer}>

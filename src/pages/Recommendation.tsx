@@ -161,6 +161,10 @@ export function Recommendation(){
                                             {categories[touristPoint.openingHours.place.category - 1]}
                                         </Paragraph>
                                         <Paragraph>
+                                            <Text style={{fontWeight: 'bold'}}>Distância do local anterior: </Text>
+                                            {(touristPoint.distanceFromOrigin / 1000).toFixed(2)} km
+                                        </Paragraph>
+                                        <Paragraph>
                                             <Text style={{fontWeight: 'bold'}}>Horário do passeio: {' '}</Text>
                                             {moment.tz(touristPoint.startHour, 'UTC').format('HH:mm')} - {moment.tz(touristPoint.endHour, 'UTC').format('HH:mm')}
                                         </Paragraph>
