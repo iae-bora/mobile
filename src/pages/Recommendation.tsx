@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Linking, Platform, SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { Card, Title, Paragraph } from 'react-native-paper';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { format } from 'date-fns';
+import moment from 'moment-timezone';
 import { Rating } from 'react-native-ratings';
 import AwesomeAlert from 'react-native-awesome-alerts';
 
@@ -93,12 +93,6 @@ export function Recommendation(){
         }
     };
 
-    const setByTimezone = (datetime: string) => {
-        const date: Date = new Date(datetime);
-        const userTimezoneOffset = date.getTimezoneOffset() * 60000;
-        return new Date(date.getTime() + userTimezoneOffset);
-    }
-
     if(loading) return <Load/>
 
     return (
@@ -139,7 +133,7 @@ export function Recommendation(){
                 />
 
                 <View style={styles.dateContainer}>
-                    <Text style={styles.date}>Data: {format(Date.parse(createdRoute.routeDate), 'dd/MM/yyyy')}</Text>
+                    <Text style={styles.date}>Data: {moment.tz(createdRoute.routeDate, 'UTC').format('DD/MM/yyyy')}</Text>
                 </View>
 
                 <View style={styles.content}>
@@ -168,7 +162,7 @@ export function Recommendation(){
                                         </Paragraph>
                                         <Paragraph>
                                             <Text style={{fontWeight: 'bold'}}>Horário do passeio: {' '}</Text>
-                                            {format(setByTimezone(touristPoint.startHour), 'HH:mm')} - {format(setByTimezone(touristPoint.endHour), 'HH:mm')}
+                                            {moment.tz(touristPoint.startHour, 'UTC').format('HH:mm')} - {moment.tz(touristPoint.endHour, 'UTC').format('HH:mm')}
                                         </Paragraph>
                                     </Card.Content>
                                 </Card>
