@@ -23,7 +23,7 @@ export function Questionnaire(){
     const answersQuestionOne = ["Rock","Sertanejo","Forró","Gospel","Pop","Funk","RAP"]
     const answersQuestionTwo = ["Churrasco","Caseira","Vegetariana","Fast Food","Japonesa","Italiana"]
     const answersQuestionThree = ["Drama","Ação","Aventura","Romance","Animação","Suspense","Terror","Comédia"]
-    const answersQuestionFour = ["Futebol","Basquete","Volei","Tênis","Lutas"]
+    const answersQuestionFour = ["Futebol","Basquete","Vôlei","Tênis","Lutas"]
     const answersQuestionFive = ["Palmeiras","Corinthians","Santos","São Paulo","Nenhum"]
     const answersQuestionSix = ["Cristianismo","Hinduísmo","Budismo","Judaísmo","Espiritismo","Nenhuma"]
     const answersQuestionSeven = ["Não","Sim"]
@@ -133,7 +133,7 @@ export function Questionnaire(){
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView>
+            <ScrollView keyboardShouldPersistTaps='handled'>
                 <View style={styles.header}>
                     <Text style={styles.title}>Precisamos te conhecer melhor</Text>
 
@@ -198,7 +198,7 @@ export function Questionnaire(){
                 <Text style={styles.textInputHeader}>Idade</Text>
                 <TextInput
                     style={styles.textInput}
-                    value={age?.toString()}
+                    value={age ? age.toString() : ''}
                     onChangeText={value => setAge(parseInt(value.replace(/[^0-9]/g, '')))}
                     keyboardType='numeric'
                 />

@@ -11,10 +11,14 @@ export function Header(props: HeaderProps){
     return (
         <View style={styles.container}>
             <View>
-                <Text style={styles.greeting}>Olá,</Text>
-                <Text style={styles.userName}>
-                    {props.username.split(' ')[0]}!
-                </Text>
+                <Text style={styles.greeting}>Olá{props.username ? ',' : '!'}</Text>
+                {
+                    props.username.length > 0 && (
+                        <Text style={styles.userName}>
+                            {props.username.split(' ')[0]}!
+                        </Text>
+                    )
+                }
             </View>
         </View>
     )

@@ -2,7 +2,7 @@
   "expo": {
     "name": "IAe, Bora?",
     "slug": "iaebora",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "orientation": "portrait",
     "icon": "./assets/adaptive-icon-v2.png",
     "splash": {
@@ -25,7 +25,7 @@
         "backgroundColor": "#FFFFFF"
       },
       "package": "com.iaebora.optime",
-      "versionCode": 15,
+      "versionCode": 16,
       "config": {
         "googleSignIn": {
           "apiKey": "<GOOGLE_APIKEY>",
