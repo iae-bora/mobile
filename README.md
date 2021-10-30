@@ -27,6 +27,8 @@ This is the mobile app version of IAe, Bora? project and it was developed with R
 - [Expo Google Auth](https://docs.expo.dev/versions/latest/sdk/google/)
 - [AsyncStorage](https://docs.expo.dev/versions/latest/sdk/async-storage/)
 - [Axios](https://github.com/axios/axios)
+- [DateTimePicker](https://docs.expo.dev/versions/latest/sdk/date-time-picker/)
+- [Lottie](https://github.com/lottie-react-native/lottie-react-native)
 
 ## :gear: Config application
 Create a `.env` file with the API_URL (from the running back-end URL) and Google Authentication informations.
