@@ -1,6 +1,6 @@
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { Alert, StyleSheet, View } from 'react-native';
+import { useNavigation, useRoute, CommonActions } from '@react-navigation/native';
 
 import { Header } from '../components/Header';
 import { Button } from '../components/Button';
@@ -8,11 +8,41 @@ import { Button } from '../components/Button';
 import { UserProps } from '../libs/storage';
 
 import colors from '../styles/colors';
+import { removeUserData } from '../libs/storage';
 
 export function Home(){
     const navigation = useNavigation();
     const route = useRoute();
     const user = route.params as UserProps;
+
+    useEffect(() => {
+        const remove = async (e: any) => {
+            e.preventDefault();
+
+            Alert.alert(
+                'Deseja sair?',
+                'Você irá retornar para a página inicial do aplicativo',
+                [
+                    { text: "Cancelar", style: 'cancel', onPress: () => {} },
+                    {
+                        text: 'Sair',
+                        style: 'destructive',
+                        onPress: async () => {
+                            await removeUserData();
+                            navigation.removeListener('beforeRemove', (e) => remove(e));
+                            navigation.dispatch(CommonActions.reset({
+                                index: 0,
+                                routes: [{ name: 'Welcome' }]
+                            }))
+                        },
+                    }
+                ]
+            );
+        }
+        navigation.addListener('beforeRemove', (e) => remove(e))
+
+        return () => navigation.removeListener('beforeRemove', (e) => remove(e));
+    }, [navigation]);
 
     return (
         <View style={styles.container}>
@@ -24,12 +54,6 @@ export function Home(){
                     title='Quero uma recomendação'
                     onPress={() => navigation.navigate('AskRecommendation', user)}
                 />
-
-                {/* <Button 
-                    button_style={styles.button} 
-                    title='Meus passeios'
-                    onPress={() => navigation.navigate('NextTours', user)}
-                /> */}
 
                 <Button 
                     button_style={styles.button} 
