@@ -5,6 +5,7 @@
 <p align="center">
   <a href="#book-about">About</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#%EF%B8%8F-technologies">Technologies</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+  <a href="#cityscape-solution-architecture">Solution architecture</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#gear-config-application">Config application</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
   <a href="#-running-the-app">Running the app</a>
 </p>
@@ -29,6 +30,18 @@ This is the mobile app version of IAe, Bora? project and it was developed with R
 - [Axios](https://github.com/axios/axios)
 - [DateTimePicker](https://docs.expo.dev/versions/latest/sdk/date-time-picker/)
 - [Lottie](https://github.com/lottie-react-native/lottie-react-native)
+
+## :cityscape: Solution architecture
+This repository is represented by the number 6 in the architecture, if you want to view the other repositories of the solution, click on one of the items below:
+
+<p align="center">
+  <img src="architecture.png"/>
+</p>
+
+- [(1) Web Crawler](https://github.com/iae-bora/abc-tourism-crawler)
+- [(3) Machine Learning](https://github.com/iae-bora/ml-api)
+- [(4) Back-End](https://github.com/iae-bora/back-end)
+- [(5) Front-End](https://github.com/iae-bora/front-end)
 
 ## :gear: Config application
 Create a `.env` file with the API_URL (from the running back-end URL) and Google Authentication informations.
